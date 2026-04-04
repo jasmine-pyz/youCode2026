@@ -1,0 +1,46 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap");
+
+:root {
+  /* ── Core palette ── */
+  --color-cream: #fffdf8;
+  --color-sand: #f0e8df;
+  --color-sand-light: #f5ede3;
+  --color-warmth: #e8b298;
+  --color-text: #3d3228;
+  --color-divider: #e8e0d6;
+
+  /* ── WCAG AAA compliant text colors ── */
+  /* All ratios verified against their background */
+  --color-text-on-warmth: #3d2218; /* 7.81:1 on #E8B298 */
+  --color-text-on-warmth-muted: #421e0a; /* 7.91:1 on #E8B298 */
+  --color-text-on-sand: #3d3228; /* 10.27:1 on #F0E8DF */
+  --color-text-on-sand-muted: #4a3f35; /* 8.43:1 on #F0E8DF */
+  --color-text-on-cream-muted: #5c5047; /* 7.67:1 on #FFFDF8 */
+
+  /* ── Functional colors ── */
+  --color-recording: #9e2e2e; /* 7.16:1 on #FFFDF8 */
+  --color-processing: #7d6b58; /* 5.02:1 on #FFFDF8 (large text/icons) */
+}
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  height: 100%;
+  height: 100dvh;
+}
+
+body {
+  font-family: "Nunito", sans-serif;
+  background: #ede6dc;
+  color: var(--color-text);
+  overflow: hidden;
+  height: 100%;
+  height: 100dvh;
+}
