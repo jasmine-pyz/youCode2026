@@ -1,0 +1,25 @@
+{
+  "name": "CommonGround",
+  "short_name": "CommonGround",
+  "description": "Multilingual communication for shelters. Speak in any language, see and hear the translation.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFFDF8",
+  "theme_color": "#FFFDF8",
+  "categories": ["communication", "social", "utilities"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
