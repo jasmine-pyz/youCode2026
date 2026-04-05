@@ -1,0 +1,82 @@
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  background: var(--surface, #fff);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  flex-shrink: 0;
+  gap: 8px;
+  /* Rotated 180deg because it sits above the flipped top mic */
+  transform: rotate(180deg);
+}
+
+.regionGroup {
+  display: flex;
+  gap: 4px;
+}
+
+.regionBtn {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 9px;
+  border-radius: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: transparent;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.15s;
+  line-height: 1;
+}
+
+.regionBtn:hover {
+  border-color: #185fa5;
+  color: #185fa5;
+}
+
+.regionBtn.active {
+  background: #185fa5;
+  color: #fff;
+  border-color: #185fa5;
+}
+
+.sessionState {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+}
+
+.langFlag {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.langCode {
+  font-size: 11px;
+  font-weight: 700;
+  color: #085041;
+  background: #f0faf5;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.clearBtn {
+  font-size: 11px;
+  color: #999;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 4px;
+  line-height: 1;
+}
+
+.clearBtn:hover {
+  color: #333;
+}
+
+.waiting {
+  font-size: 11px;
+  color: #bbb;
+  font-style: italic;
+}

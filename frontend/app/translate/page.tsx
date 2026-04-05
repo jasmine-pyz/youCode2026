@@ -1,10 +1,15 @@
 "use client";
 
 import { useConversation } from "@/hooks";
-import { MicButton, ConversationThread, ResetIcon } from "@/components";
+import { MicButton, ConversationThread, ResetIcon, TextInputBar } from "@/components";
+import { RegionPicker } from "@/components/RegionPicker";
+import { getHearThService } from "@/lib/hearth-translation-service";
 import styles from "./page.module.css";
 
-export default function AppPage() {
+// Swap in HearThTranslationService — everything else in the UI is unchanged.
+const hearthService = getHearThService();
+
+export default function Home() {
   const {
     messages,
     recordingState,
@@ -12,15 +17,20 @@ export default function AppPage() {
     error,
     startRecording,
     stopRecording,
+    submitText,
     playMessage,
     clearConversation,
     dismissError,
-  } = useConversation();
+  } = useConversation(hearthService);
 
   const isRecording = recordingState.status === "recording";
   const isProcessing = recordingState.status === "processing";
   const recordingSpeaker =
     recordingState.status !== "idle" ? recordingState.speaker : null;
+
+  function handleClearSession() {
+    clearConversation();
+  }
 
   return (
     <main className={styles.shell}>
@@ -30,6 +40,14 @@ export default function AppPage() {
           {error}
         </div>
       )}
+
+      {/*
+        Region picker for the top person (resident / flipped side).
+        Sits above the top mic, rotated with it.
+        Shows detected language once resident has spoken.
+        Lets worker set region model before or during conversation.
+      */}
+      <RegionPicker onClearSession={handleClearSession} />
 
       {/* Top mic — flipped for person across table */}
       <MicButton
@@ -41,7 +59,7 @@ export default function AppPage() {
         flipped
       />
 
-      {/* Top half — rotated conversation */}
+      {/* Top half — rotated conversation (resident side) */}
       <div className={`${styles.half} ${styles.top}`}>
         <ConversationThread
           messages={messages}
@@ -51,6 +69,12 @@ export default function AppPage() {
           isProcessing={isProcessing}
           onPlay={playMessage}
         />
+        {/* Text input for resident — appears near their mic after rotation */}
+        <TextInputBar
+          speaker="top"
+          onSubmit={submitText}
+          isDisabled={recordingState.status !== "idle"}
+        />
       </div>
 
       {/* Center divider + reset */}
@@ -59,7 +83,7 @@ export default function AppPage() {
         {messages.length > 0 && !isRecording && !isProcessing && (
           <button
             className={styles.resetBtn}
-            onClick={clearConversation}
+            onClick={handleClearSession}
             aria-label="Reset conversation"
           >
             <ResetIcon size={16} />
@@ -67,7 +91,7 @@ export default function AppPage() {
         )}
       </div>
 
-      {/* Bottom half — normal orientation */}
+      {/* Bottom half — normal orientation (worker side) */}
       <div className={styles.half}>
         <ConversationThread
           messages={messages}
@@ -76,6 +100,12 @@ export default function AppPage() {
           isRecording={recordingSpeaker === "bottom"}
           isProcessing={isProcessing}
           onPlay={playMessage}
+        />
+        {/* Text input for worker — appears near their mic */}
+        <TextInputBar
+          speaker="bottom"
+          onSubmit={submitText}
+          isDisabled={recordingState.status !== "idle"}
         />
       </div>
 
@@ -87,6 +117,3 @@ export default function AppPage() {
         onStart={startRecording}
         onStop={stopRecording}
       />
-    </main>
-  );
-}
