@@ -4,10 +4,10 @@
 bridge-env/
 youCodeVenv/
 
-venv/
+**/venv/
+**/.venv/
 .env/
 .envrc
-.venv/
 
 # Model cache (huge — don't commit)
 ~/.cache/huggingface/
