@@ -27,7 +27,7 @@ interface UseConversationReturn {
     autoPlay?: boolean
   ) => Promise<void>;
   submitText: (text: string, speaker: Speaker) => Promise<void>;
-  playMessage: (messageId: string) => Promise<void>;
+  playMessage: (messageId: string, viewer: Speaker) => Promise<void>;
   clearConversation: () => void;
   dismissError: () => void;
 }
@@ -169,9 +169,13 @@ export function useConversation(
   );
 
   const playMessage = useCallback(
-    async (messageId: string) => {
+    async (messageId: string, viewer: Speaker) => {
       const msg = messages.find((m) => m.id === messageId);
       if (!msg || playingId) return;
+
+      const isMyMessage = msg.speaker === viewer;
+      const text = isMyMessage ? msg.originalText : msg.translatedText;
+      const langCode = isMyMessage ? msg.detectedLanguage.code : msg.targetLanguage.code;
 
       try {
         setPlayingId(messageId);

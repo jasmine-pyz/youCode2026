@@ -136,6 +136,29 @@ export function clearSession(): void {
 }
 
 // ─── localStorage helpers (safe for SSR) ─────────────────────────────────────
+export function setResidentLanguageManual(name: string, code: string, flag: string): void {
+  _residentLanguage = {
+    code,
+    flag,
+    confidence: 1,
+  };
+  _residentLanguageName = name;
+}
+
+// ─── Recording infrastructure (shared with existing service) ───
+
+interface ActiveRecording {
+  recognition: any;
+  transcript: string;
+  detectedLang: string;
+  mediaRecorder?: MediaRecorder;
+  audioChunks: Blob[];
+}
+
+let activeRecording: ActiveRecording | null = null;
+let recordingCounter = 0;
+
+// ─── localStorage helpers (safe for SSR) ───
 
 function storedToken(): string {
   try {

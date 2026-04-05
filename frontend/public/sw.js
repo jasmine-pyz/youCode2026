@@ -1,6 +1,6 @@
 // /// <reference lib="webworker" />
 
-// const CACHE_NAME = "commonground-v1";
+// const CACHE_NAME = "commonground-v2";
 
 // /**
 //  * Assets to precache for offline use.
@@ -97,7 +97,7 @@
 //   );
 // });
 
-const CACHE_NAME = "commonground-v1";
+const CACHE_NAME = "commonground-v2";
 
 const PRECACHE_URLS = ["/", "/manifest.json"];
 
@@ -154,12 +154,10 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Everything else: cache-first, fallback to network
+  // Everything else: network-first, fallback to cache if offline
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-
-      return fetch(event.request).then((response) => {
+    fetch(event.request)
+      .then((response) => {
         if (
           event.request.method === "GET" &&
           response.status === 200 &&
@@ -171,7 +169,7 @@ self.addEventListener("fetch", (event) => {
           });
         }
         return response;
-      });
-    })
+      })
+      .catch(() => caches.match(event.request))
   );
 });

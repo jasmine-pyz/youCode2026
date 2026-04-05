@@ -97,6 +97,10 @@ def _translate(client: InferenceClient, text: str, target_lang: str) -> str:
         "Translation:",
         "Answer:",
         "Output:",
+        "Text:",
+        "Translated text:",
+        "Output:",
+        "Result:",
     ]:
         if translation.lower().startswith(prefix.lower()):
             translation = translation[len(prefix) :].strip()
