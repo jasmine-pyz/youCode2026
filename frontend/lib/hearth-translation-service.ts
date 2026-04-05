@@ -323,7 +323,12 @@ export class HearThTranslationService implements TranslationService {
 
     if (!res.ok) {
       const err = await res.json().catch(() => ({ detail: res.statusText }));
-      throw new Error(err.detail || "Translation failed");
+      const detail = err.detail;
+      const message =
+        typeof detail === "object" && detail?.message
+          ? detail.message
+          : detail || "Translation failed";
+      throw new Error(message);
     }
 
     const data = await res.json();
@@ -389,7 +394,12 @@ export class HearThTranslationService implements TranslationService {
 
     if (!res.ok) {
       const err = await res.json().catch(() => ({ detail: res.statusText }));
-      throw new Error(err.detail || "Translation failed");
+      const detail = err.detail;
+      const message =
+        typeof detail === "object" && detail?.message
+          ? detail.message
+          : detail || "Translation failed";
+      throw new Error(message);
     }
 
     const data = await res.json();

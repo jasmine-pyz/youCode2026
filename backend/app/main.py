@@ -22,6 +22,9 @@ from dotenv import load_dotenv
 import httpx
 
 
+from .aggression import check_aggression
+from .notify import send_sms_alert
+
 # flake8:noqa
 # ─── App ──────────────────────────────────────────────────────────────────────
 
@@ -189,6 +192,11 @@ def detect_and_translate(req: DetectAndTranslateRequest, request: Request):
                → ask Aya to detect + translate, return the detected language name.
     """
     token = get_token(request)
+    if not token:
+        raise HTTPException(
+            status_code=401, detail="No HuggingFace token. Add it in Settings."
+        )
+
     print(
         f"[HearTh] /detect-and-translate — lang={req.detected_language_code!r}, text={req.text!r}"
     )
@@ -211,6 +219,17 @@ def detect_and_translate(req: DetectAndTranslateRequest, request: Request):
             detected_language_name = req.detected_language_name
             detected_language_code = req.detected_language_code
 
+        # Check the English translation for aggressive content
+        if check_aggression(translation):
+            send_sms_alert(req.text, translation)
+            raise HTTPException(
+                status_code=422,
+                detail={
+                    "error_code": "aggressive_content",
+                    "message": "Message blocked: aggressive or threatening language detected.",
+                },
+            )
+
         print(
             f"[HearTh] translation: {translation!r}, lang: {detected_language_name!r}"
         )
@@ -219,6 +238,8 @@ def detect_and_translate(req: DetectAndTranslateRequest, request: Request):
             "detected_language_code": detected_language_code,
             "translation": translation,
         }
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -238,10 +259,23 @@ def translate(req: TranslateRequest, request: Request):
     model_id = MODELS.get(req.model_key, MODELS["global"])
     client = InferenceClient(model=model_id, token=token)
 
+    # Worker text is already English — check before translating to save API cost
+    if check_aggression(req.text):
+        send_sms_alert(req.text, req.text)
+        raise HTTPException(
+            status_code=422,
+            detail={
+                "error_code": "aggressive_content",
+                "message": "Message blocked: aggressive or threatening language detected.",
+            },
+        )
+
     try:
         translation = _translate(client, req.text, req.target_lang)
         print(f"[HearTh] translation: {translation!r}")
         return {"translation": translation}
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
