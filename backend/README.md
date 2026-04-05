@@ -1,68 +1,28 @@
-# Backend Setup (FastAPI)
+## Backend
 
-This backend serves translation endpoints and expects a Hugging Face token.
+The FastAPI backend lives in [backend/](backend/).
 
-## 1) Go to backend folder
+Use [backend/backend.sh](backend/backend.sh) to set up the backend environment, install dependencies, and load backend/.env before running uvicorn.
 
-```bash
-cd backend
-```
+## Manual setup
 
-## 2) Create and activate virtual environment
+If `backend.sh` does not work, do it manually:
 
-If you already have `youCodeVenv`, just activate it.
-
-```bash
-python3 -m venv youCodeVenv
-source youCodeVenv/bin/activate
-```
-
-## 3) Install dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-## 4) Add environment variables
-
-Create a `.env` file in `backend/` with:
-
-```env
-HF_TOKEN=your_huggingface_token_here
-```
-
-The API now loads `backend/.env` automatically at startup.
-
-## 5) Run the backend
-
-```bash
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
-
-## 6) Verify it works
-
-Health check:
-
-```bash
-curl http://127.0.0.1:8000/health
-```
-
-Expected: JSON with `status: "ok"` and available models.
-
-## API Endpoints
-
-- `POST /translate`
-- `POST /detect-and-translate`
-- `GET /health`
-
-## Common Issues
-
-- `401 No HuggingFace token`:
-
-  - Confirm `.env` exists under `backend/.env`
-  - Confirm `HF_TOKEN` is set correctly
-  - Restart `uvicorn` after changing `.env`
-
-- `405 Method Not Allowed`:
-  - Use `POST` for translation endpoints (`/translate`, `/detect-and-translate`)
-  - `GET` is only supported on `/health`
+1. Open a terminal in the backend folder.
+2. Create and activate a Python 3.11 virtual environment:
+   ```bash
+   python3.11 -m venv .venv
+   source .venv/bin/activate
+   ```
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. Create `backend/.env` and add your Hugging Face token:
+   ```env
+   HF_TOKEN=your_huggingface_token_here
+   ```
+5. Start the backend:
+   ```bash
+   uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+   ```

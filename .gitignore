@@ -4,6 +4,11 @@
 bridge-env/
 youCodeVenv/
 
+venv/
+.env/
+.envrc
+.venv/
+
 # Model cache (huge — don't commit)
 ~/.cache/huggingface/
 .cache/
@@ -35,3 +40,14 @@ __pycache__/
 # Logs
 *.log
 uvicorn.log
+
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
