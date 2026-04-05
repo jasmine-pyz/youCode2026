@@ -1,11 +1,22 @@
 "use client";
 
-import { useRef, useEffect } from "react";
-import { MessageBubble } from "./MessageBubble";
+import { SpeakerIcon, PlayingIcon, MicIcon } from "./Icons";
 import { Waveform } from "./Waveform";
-import { MicIcon } from "./Icons";
 import type { TranslationResult, Speaker } from "@/types";
 import styles from "./ConversationThread.module.css";
+
+const LANGUAGE_NAMES: Record<string, string> = {
+  en: "English",   es: "Español",    ar: "العربية",    uk: "Українська",
+  fr: "Français",  zh: "普通话",      yue: "廣東話",    pa: "ਪੰਜਾਬੀ",
+  fa: "فارسی",     vi: "Tiếng Việt", am: "አማርኛ",      tl: "Filipino",
+  de: "Deutsch",   pt: "Português",  ru: "Русский",    ja: "日本語",
+  ko: "한국어",     hi: "हिन्दी",      sw: "Kiswahili",  so: "Soomaali",
+  ti: "ትግርኛ",
+};
+
+function getLanguageName(code: string): string {
+  return LANGUAGE_NAMES[code.split("-")[0].toLowerCase()] ?? code.toUpperCase();
+}
 
 interface ConversationThreadProps {
   messages: TranslationResult[];
@@ -24,20 +35,8 @@ export function ConversationThread({
   isProcessing,
   onPlay,
 }: ConversationThreadProps) {
-  const scrollRef = useRef<HTMLDivElement>(null);
+  if (isRecording) return <Waveform active={true} />;
 
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [messages.length, isRecording, isProcessing]);
-
-  // Recording state — show waveform
-  if (isRecording) {
-    return <Waveform active={true} />;
-  }
-
-  // Processing state — show dots
   if (isProcessing) {
     return (
       <div className={styles.processingOverlay}>
@@ -48,8 +47,9 @@ export function ConversationThread({
     );
   }
 
-  // Empty state — faded mic icon
-  if (messages.length === 0) {
+  const latest = messages[messages.length - 1] ?? null;
+
+  if (!latest) {
     return (
       <div className={styles.empty}>
         <MicIcon size={32} />
@@ -57,18 +57,24 @@ export function ConversationThread({
     );
   }
 
-  // Conversation
+  const isMyMessage = latest.speaker === viewer;
+  const text = isMyMessage ? latest.originalText : latest.translatedText;
+  const lang = isMyMessage ? latest.detectedLanguage : latest.targetLanguage;
+  const isPlaying = playingId === latest.id;
+
   return (
-    <div className={styles.convo} ref={scrollRef}>
-      {messages.map((msg) => (
-        <MessageBubble
-          key={msg.id}
-          message={msg}
-          viewer={viewer}
-          isPlaying={playingId === msg.id}
-          onPlay={onPlay}
-        />
-      ))}
+    <div className={styles.view}>
+      <div className={styles.langBadge}>
+        {lang.flag} {getLanguageName(lang.code)}
+      </div>
+      <p className={styles.text}>{text}</p>
+      <button
+        className={`${styles.playBtn} ${isPlaying ? styles.playing : ""}`}
+        onClick={() => onPlay(latest.id)}
+        aria-label="Play aloud"
+      >
+        {isPlaying ? <PlayingIcon size={18} /> : <SpeakerIcon size={18} />}
+      </button>
     </div>
   );
 }
