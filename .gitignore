@@ -2,6 +2,7 @@
 
 # Virtual environment
 bridge-env/
+youCodeVenv/
 
 # Model cache (huge — don't commit)
 ~/.cache/huggingface/
