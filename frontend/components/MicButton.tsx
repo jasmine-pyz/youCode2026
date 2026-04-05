@@ -23,10 +23,19 @@ export function MicButton({
   onStop,
   flipped = false,
 }: MicButtonProps) {
+  const vibrate = (pattern: number | number[]) => {
+    if (typeof navigator !== "undefined" && navigator.vibrate) {
+      navigator.vibrate(pattern);
+    }
+  };
+
   const handlePointerDown = useCallback(
     (e: React.PointerEvent) => {
       e.preventDefault();
-      if (!isDisabled) onStart(speaker);
+      if (!isDisabled) {
+        vibrate(30);
+        onStart(speaker);
+      }
     },
     [isDisabled, onStart, speaker]
   );
@@ -34,6 +43,7 @@ export function MicButton({
   const handlePointerUp = useCallback(
     (e: React.PointerEvent) => {
       e.preventDefault();
+      vibrate(20);
       onStop(speaker);
     },
     [onStop, speaker]
