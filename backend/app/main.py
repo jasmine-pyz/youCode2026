@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from huggingface_hub import InferenceClient
+from dotenv import load_dotenv
 import os, json, pathlib, re
 
 # flake8: noqa
@@ -12,6 +13,10 @@ app.add_middleware(
 )
 
 FRONTEND_DIR = pathlib.Path(__file__).parent.parent.parent / "frontend"
+BACKEND_DIR = pathlib.Path(__file__).resolve().parent.parent
+
+# Load environment variables from backend/.env (if present)
+load_dotenv(BACKEND_DIR / ".env")
 
 MODELS = {
     "global": "CohereLabs/tiny-aya-global",
