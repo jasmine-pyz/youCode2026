@@ -89,8 +89,8 @@ Implement the transcript save and review feature entirely in the Next.js fronten
     - `dismissStorageError` clears error
     - _Requirements: 1.1, 1.3, 5.3_
 
-- [ ] 5. Implement `SaveButton` component
-  - [-] 5.1 Create `frontend/components/SaveButton.tsx` and `SaveButton.module.css`
+- [x] 5. Implement `SaveButton` component
+  - [x] 5.1 Create `frontend/components/SaveButton.tsx` and `SaveButton.module.css`
     - Props: `messages: TranslationResult[]`, `onSave: () => SaveResult`, `onClear: () => void`
     - Renders a floppy-disk / bookmark icon button
     - On tap: calls `onSave()`; shows inline toast — "Saved" on `{ ok: true }`, "Nothing to save yet" on `reason: "empty"`, "Storage full — delete old transcripts to save new ones" on `reason: "storage_full"`, "Transcripts unavailable on this device" on `reason: "unavailable"`
@@ -105,7 +105,7 @@ Implement the transcript save and review feature entirely in the Next.js fronten
     - _Requirements: 1.2, 1.3, 1.5_
 
 - [ ] 6. Implement `TranscriptList` component
-  - [~] 6.1 Create `frontend/components/TranscriptList.tsx` and `TranscriptList.module.css`
+  - [-] 6.1 Create `frontend/components/TranscriptList.tsx` and `TranscriptList.module.css`
     - Props: `transcripts: SavedTranscript[]`, `onSelect: (id: string) => void`, `onDelete: (id: string) => void`
     - Renders scrollable list; each row shows title, formatted `savedAt` date, and message count
     - Shows "No saved transcripts yet" when list is empty (Requirement 2.3)
