@@ -73,7 +73,7 @@ export function ConversationThread({
         onClick={() => onPlay(latest.id)}
         aria-label="Play aloud"
       >
-        {isPlaying ? <PlayingIcon size={18} /> : <SpeakerIcon size={18} />}
+        {isPlaying ? <PlayingIcon size={22} /> : <SpeakerIcon size={22} />}
       </button>
     </div>
   );
