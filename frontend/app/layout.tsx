@@ -3,14 +3,14 @@ import { ServiceWorkerRegistrar } from "@/components/ServiceWorkerRegistrar";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "CommonGround",
+  title: "Hearth",
   description:
-    "Multilingual communication for shelters. Speak in any language, see and hear the translation.",
+    "Real-time translation for shelter staff and residents. Speak any language, face to face.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "CommonGround",
+    title: "Hearth",
   },
   other: {
     "mobile-web-app-capable": "yes",
