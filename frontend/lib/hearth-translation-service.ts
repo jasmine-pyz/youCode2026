@@ -245,11 +245,15 @@ export class HearThTranslationService implements TranslationService {
 
     if (!res.ok) {
       const err = await res.json().catch(() => ({ detail: res.statusText }));
-      throw new Error(err.detail || "Translation failed");
+      const detail = err.detail;
+      const message =
+        typeof detail === "object" && detail?.message
+          ? detail.message
+          : detail || "Translation failed";
+      throw new Error(message);
     }
 
     const data = await res.json();
-    console.log("[HearTh] detect-and-translate response:", data); // ← ADD THIS
 
     _residentLanguageName = data.detected_language || null;
     const detectedCode = data.detected_language_code || sttDetectedCode;
@@ -290,7 +294,12 @@ export class HearThTranslationService implements TranslationService {
 
     if (!res.ok) {
       const err = await res.json().catch(() => ({ detail: res.statusText }));
-      throw new Error(err.detail || "Translation failed");
+      const detail = err.detail;
+      const message =
+        typeof detail === "object" && detail?.message
+          ? detail.message
+          : detail || "Translation failed";
+      throw new Error(message);
     }
 
     const data = await res.json();
