@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef, useEffect, useState } from "react";
 import { SpeakerIcon, PlayingIcon, MicIcon } from "./Icons";
 import { Waveform } from "./Waveform";
 import type { TranslationResult, Speaker } from "@/types";
@@ -24,7 +25,7 @@ interface ConversationThreadProps {
   playingId: string | null;
   isRecording: boolean;
   isProcessing: boolean;
-  onPlay: (id: string) => void;
+  onPlay: (id: string, viewer: Speaker) => void;
 }
 
 export function ConversationThread({
@@ -35,6 +36,23 @@ export function ConversationThread({
   isProcessing,
   onPlay,
 }: ConversationThreadProps) {
+  const textRef = useRef<HTMLSpanElement>(null);
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const [wrapped, setWrapped] = useState(false);
+
+  useEffect(() => {
+    function check() {
+      if (!textRef.current || !btnRef.current) return;
+      const textBottom = textRef.current.getBoundingClientRect().bottom;
+      const btnTop = btnRef.current.getBoundingClientRect().top;
+      setWrapped(btnTop > textBottom - 4);
+    }
+    check();
+    const observer = new ResizeObserver(check);
+    if (textRef.current) observer.observe(textRef.current);
+    return () => observer.disconnect();
+  }, [messages]);
+
   if (isRecording) return <Waveform active={true} />;
 
   if (isProcessing) {
@@ -67,14 +85,17 @@ export function ConversationThread({
       <div className={styles.langBadge}>
         {lang.flag} {getLanguageName(lang.code)}
       </div>
-      <p className={styles.text}>{text}</p>
-      <button
-        className={`${styles.playBtn} ${isPlaying ? styles.playing : ""}`}
-        onClick={() => onPlay(latest.id)}
-        aria-label="Play aloud"
-      >
-        {isPlaying ? <PlayingIcon size={22} /> : <SpeakerIcon size={22} />}
-      </button>
+      <div className={styles.textRow}>
+        <span ref={textRef} className={styles.text}>{text}</span>
+        <button
+          ref={btnRef}
+          className={`${styles.playBtn} ${isPlaying ? styles.playing : ""} ${wrapped ? styles.playBtnWrapped : ""}`}
+          onClick={() => onPlay(latest.id, viewer)}
+          aria-label="Play aloud"
+        >
+          {isPlaying ? <PlayingIcon size={25} /> : <SpeakerIcon size={25} />}
+        </button>
+      </div>
     </div>
   );
 }

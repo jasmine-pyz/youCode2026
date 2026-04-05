@@ -2,19 +2,20 @@
   flex-shrink: 0;
   display: flex;
   justify-content: center;
-  padding: 12px 0;
+  padding: 2px 0 0;
+  margin-bottom: -20px;
   z-index: 5;
 }
 
 .wrap {
   position: relative;
-  width: 56px;
-  height: 56px;
+  width: 60px;
+  height: 60px;
 }
 
 .btn {
-  width: 56px;
-  height: 56px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   border: none;
   background: var(--color-warmth);
@@ -23,7 +24,7 @@
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
-  box-shadow: 0 3px 14px rgba(232, 178, 152, 0.3);
+  box-shadow: 0 3px 14px rgba(240, 168, 130, 0.35);
   position: relative;
   z-index: 2;
   -webkit-user-select: none;
@@ -39,7 +40,7 @@
 .btn.recording {
   background: var(--color-recording);
   transform: scale(1.1);
-  box-shadow: 0 4px 20px rgba(158, 46, 46, 0.3);
+  box-shadow: 0 4px 20px rgba(196, 94, 26, 0.3);
 }
 
 .btn.disabled {

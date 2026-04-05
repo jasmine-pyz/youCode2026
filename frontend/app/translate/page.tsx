@@ -86,10 +86,9 @@ export default function AppPage() {
         </div>
       </div>
 
-      {activeTab === "talk" ? (
-        <>
-          <RegionPicker onClearSession={handleClearSession} />
-
+      <div className={styles.tabsWrapper}>
+        {/* Talk panel */}
+        <div className={`${styles.tabContent} ${activeTab === "talk" ? styles.tabVisible : styles.tabHidden}`}>
           {/* Top half — rotated conversation (resident side) */}
           <div className={`${styles.half} ${styles.top}`}>
             <ConversationThread
@@ -100,7 +99,6 @@ export default function AppPage() {
               isProcessing={isProcessing}
               onPlay={playMessage}
             />
-            {/* Top mic — above text input, orientation handled by parent rotate(180deg) */}
             <MicButton
               speaker="top"
               isRecording={recordingSpeaker === "top"}
@@ -115,9 +113,9 @@ export default function AppPage() {
             />
           </div>
 
-          {/* Center divider */}
+          {/* Center divider with RegionPicker */}
           <div className={styles.centerDivider}>
-            <div className={styles.dividerLine} />
+            <RegionPicker onClearSession={handleClearSession} />
           </div>
 
           {/* Bottom half — normal orientation (worker side) */}
@@ -130,7 +128,6 @@ export default function AppPage() {
               isProcessing={isProcessing}
               onPlay={playMessage}
             />
-            {/* Bottom mic — above text input */}
             <MicButton
               speaker="bottom"
               isRecording={recordingSpeaker === "bottom"}
@@ -144,10 +141,13 @@ export default function AppPage() {
               isDisabled={recordingState.status !== "idle"}
             />
           </div>
-        </>
-      ) : (
-        <SupportPanel onSelect={handlePromptSelect} />
-      )}
+        </div>
+
+        {/* Support panel */}
+        <div className={`${styles.tabContent} ${activeTab === "support" ? styles.tabVisible : styles.tabHidden}`}>
+          <SupportPanel key={activeTab} onSelect={handlePromptSelect} />
+        </div>
+      </div>
     </main>
   );
 }
