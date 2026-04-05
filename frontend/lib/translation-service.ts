@@ -126,7 +126,7 @@ export class WebSpeechTranslationService implements TranslationService {
     // This tells the browser to try detecting the language.
     // NOTE: Browser support for auto-detection varies.
     // For more reliable detection, use a backend service.
-    // recognition.lang = ""; // uncomment if your browser supports it
+    recognition.lang = ""; // uncomment if your browser supports it
 
     // Start audio capture for potential raw audio storage
     let mediaRecorder: MediaRecorder | undefined;
