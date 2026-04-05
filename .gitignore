@@ -1,1 +1,36 @@
 .env
+
+# Virtual environment
+bridge-env/
+
+# Model cache (huge — don't commit)
+~/.cache/huggingface/
+.cache/
+
+# Audio temp files
+*.webm
+*.wav
+*.mp3
+*.m4a
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Environment variables (API keys etc)
+.env
+*.env
+
+# Mac
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+
+# Logs
+*.log
+uvicorn.log
