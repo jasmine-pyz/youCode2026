@@ -24,7 +24,7 @@ interface ConversationThreadProps {
   playingId: string | null;
   isRecording: boolean;
   isProcessing: boolean;
-  onPlay: (id: string) => void;
+  onPlay: (id: string, viewer: Speaker) => void;
 }
 
 export function ConversationThread({
@@ -70,7 +70,7 @@ export function ConversationThread({
       <p className={styles.text}>{text}</p>
       <button
         className={`${styles.playBtn} ${isPlaying ? styles.playing : ""}`}
-        onClick={() => onPlay(latest.id)}
+        onClick={() => onPlay(latest.id, viewer)}
         aria-label="Play aloud"
       >
         {isPlaying ? <PlayingIcon size={22} /> : <SpeakerIcon size={22} />}
