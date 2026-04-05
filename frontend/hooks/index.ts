@@ -197,6 +197,7 @@ export function useConversation(
         const translateResult = await service.translate({
           text,
           sourceLanguage: "en",
+          speaker,
         });
         const message: TranslationResult = {
           id: `msg-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
