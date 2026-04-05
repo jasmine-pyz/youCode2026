@@ -8,7 +8,9 @@
 - Node.js 18+
 - ffmpeg (`brew install ffmpeg`)
 
-### Backend
+### First-Time Setup
+
+#### Backend
 
 ```bash
 cd backend
@@ -18,7 +20,7 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-### Frontend
+#### Frontend
 
 ```bash
 cd frontend
@@ -27,6 +29,23 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+### After Pulling Latest Main
+
+```bash
+git pull origin main
+
+# Backend — install any new dependencies
+cd backend
+source .venv/bin/activate
+pip install -r requirements.txt
+
+# Frontend — install any new dependencies
+cd ../frontend
+npm install
+```
+
+Then restart both servers as usual.
 
 ### Testing on a Physical Device (iOS)
 
