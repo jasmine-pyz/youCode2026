@@ -165,3 +165,41 @@
     transform: translateX(-50%) translateY(0);
   }
 }
+
+/* ── Transcript controls (bottom-right of worker half) ── */
+
+.transcriptControls {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  z-index: 15;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+}
+
+.transcriptBtn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: background 0.2s, transform 0.15s;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.transcriptBtn:hover {
+  background: rgba(255, 255, 255, 0.18);
+  transform: scale(1.08);
+}
+
+.transcriptBtn:active {
+  transform: scale(0.95);
+}

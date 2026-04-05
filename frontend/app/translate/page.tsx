@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { useConversation } from "@/hooks";
+import { useConversation, useTranscripts } from "@/hooks";
 import {
   MicButton,
   ConversationThread,
   SupportPanel,
   TextInputBar,
+  SaveButton,
+  TranscriptOverlay,
 } from "@/components";
 import { RegionPicker } from "@/components/RegionPicker";
 import { getHearThService } from "@/lib/hearth-translation-service";
@@ -21,6 +23,7 @@ export default function AppPage() {
   }
   const hearthService = hearthServiceRef.current;
   const [activeTab, setActiveTab] = useState<"talk" | "support">("talk");
+  const [showOverlay, setShowOverlay] = useState(false);
 
   const {
     messages,
@@ -35,6 +38,14 @@ export default function AppPage() {
     clearConversation,
     dismissError,
   } = useConversation(hearthService);
+
+  const {
+    transcripts,
+    saveTranscript,
+    deleteTranscript,
+    storageError,
+    dismissStorageError,
+  } = useTranscripts();
 
   const isRecording = recordingState.status === "recording";
   const isProcessing = recordingState.status === "processing";
@@ -56,6 +67,11 @@ export default function AppPage() {
       {error && (
         <div className={styles.errorToast} onClick={dismissError}>
           {error}
+        </div>
+      )}
+      {storageError && (
+        <div className={styles.errorToast} onClick={dismissStorageError}>
+          {storageError}
         </div>
       )}
 
@@ -120,6 +136,13 @@ export default function AppPage() {
 
           {/* Bottom half — normal orientation (worker side) */}
           <div className={styles.half}>
+            {showOverlay && (
+              <TranscriptOverlay
+                transcripts={transcripts}
+                onDelete={deleteTranscript}
+                onClose={() => setShowOverlay(false)}
+              />
+            )}
             <ConversationThread
               messages={messages}
               viewer="bottom"
@@ -140,6 +163,20 @@ export default function AppPage() {
               onSubmit={submitText}
               isDisabled={recordingState.status !== "idle"}
             />
+            {/* Transcript controls — pinned to bottom-right, out of flow */}
+            <div className={styles.transcriptControls}>
+              <SaveButton
+                onSave={() => saveTranscript(messages)}
+                onClear={clearConversation}
+              />
+              <button
+                className={styles.transcriptBtn}
+                aria-label="View saved transcripts"
+                onClick={() => setShowOverlay(true)}
+              >
+                📋
+              </button>
+            </div>
           </div>
         </div>
 
