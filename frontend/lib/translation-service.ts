@@ -37,6 +37,10 @@ const LANGUAGE_FLAGS: Record<string, string> = {
   zh: "🇨🇳",
   "zh-CN": "🇨🇳",
   "zh-TW": "🇹🇼",
+  yue: "🇭🇰",       // Cantonese
+  pa: "🇮🇳",        // Punjabi
+  fa: "🇮🇷",        // Farsi / Persian
+  vi: "🇻🇳",        // Vietnamese
   am: "🇪🇹",
   tl: "🇵🇭",
   de: "🇩🇪",
