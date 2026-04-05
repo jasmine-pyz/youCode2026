@@ -90,16 +90,6 @@ export default function AppPage() {
         <>
           <RegionPicker onClearSession={handleClearSession} />
 
-          {/* Top mic — flipped for person across table */}
-          <MicButton
-            speaker="top"
-            isRecording={recordingSpeaker === "top"}
-            isDisabled={recordingSpeaker === "bottom" || isProcessing}
-            onStart={startRecording}
-            onStop={stopRecording}
-            flipped
-          />
-
           {/* Top half — rotated conversation (resident side) */}
           <div className={`${styles.half} ${styles.top}`}>
             <ConversationThread
@@ -109,6 +99,14 @@ export default function AppPage() {
               isRecording={recordingSpeaker === "top"}
               isProcessing={isProcessing}
               onPlay={playMessage}
+            />
+            {/* Top mic — above text input, orientation handled by parent rotate(180deg) */}
+            <MicButton
+              speaker="top"
+              isRecording={recordingSpeaker === "top"}
+              isDisabled={recordingSpeaker === "bottom" || isProcessing}
+              onStart={startRecording}
+              onStop={stopRecording}
             />
             <TextInputBar
               speaker="top"
@@ -132,21 +130,20 @@ export default function AppPage() {
               isProcessing={isProcessing}
               onPlay={playMessage}
             />
+            {/* Bottom mic — above text input */}
+            <MicButton
+              speaker="bottom"
+              isRecording={recordingSpeaker === "bottom"}
+              isDisabled={recordingSpeaker === "top" || isProcessing}
+              onStart={startRecording}
+              onStop={stopRecording}
+            />
             <TextInputBar
               speaker="bottom"
               onSubmit={submitText}
               isDisabled={recordingState.status !== "idle"}
             />
           </div>
-
-          {/* Bottom mic */}
-          <MicButton
-            speaker="bottom"
-            isRecording={recordingSpeaker === "bottom"}
-            isDisabled={recordingSpeaker === "top" || isProcessing}
-            onStart={startRecording}
-            onStop={stopRecording}
-          />
         </>
       ) : (
         <SupportPanel onSelect={handlePromptSelect} />

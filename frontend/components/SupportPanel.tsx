@@ -43,6 +43,8 @@ const categories = [
       "Is there anything you have been wanting to talk about?",
       "Would it help to start with what feels hardest right now?",
       "How can I best support you right now?",
+      "Is there a particular concern you would like to focus on today?",
+      "What is one thing that would make today a little easier for you?",
     ],
   },
   {
@@ -59,6 +61,8 @@ const categories = [
       "Whatever you are feeling is okay.",
       "I am here with you, and we can figure this out together.",
       "What would feel most helpful for you right now?",
+      "You are doing the best you can, and that is enough.",
+      "We are here for you, no matter what.",
     ],
   },
   {
@@ -75,6 +79,8 @@ const categories = [
       "Do you need help keeping your belongings or documents safe?",
       "Would you like to charge your phone or use a phone to call someone?",
       "What would help you feel more comfortable or supported right now?",
+      "Do you need any transportation or help getting somewhere?",
+      "Is there anything else we can do to meet your needs right now?",
     ],
   },
   {
@@ -91,6 +97,8 @@ const categories = [
       "Do you feel comfortable staying here tonight?",
       "Is there anything we can do to help you feel safer?",
       "Do you need us to take any immediate steps to support your safety?",
+      "Would you like us to stay nearby while you settle in?",
+      "Are there any people or places you are trying to avoid right now?",
     ],
   },
   {
@@ -107,6 +115,8 @@ const categories = [
       "Have you been able to rest and eat okay?",
       "Would it help to talk about what has been happening?",
       "What would help you feel a little better right now?",
+      "Is there something specific that has been on your mind?",
+      "You are not a burden. We are here because we care.",
     ],
   },
   {
@@ -123,6 +133,8 @@ const categories = [
       "Would you like help contacting a family member?",
       "Do any of your children have needs we should know about?",
       "How can we best support you and your family right now?",
+      "Would you like support connecting with family services in the area?",
+      "Are there any custody or legal concerns we should be aware of?",
     ],
   },
   {
@@ -139,6 +151,8 @@ const categories = [
       "Have you had something to eat or drink recently?",
       "Would you like first aid or medical attention?",
       "We can help connect you with a health clinic. Would that be helpful?",
+      "Do you have any mental health needs we can support you with?",
+      "Would you like help getting a prescription filled or accessing a pharmacy?",
     ],
   },
   {
@@ -155,6 +169,8 @@ const categories = [
       "We can help connect you with local support organizations.",
       "Are you looking for longer term housing support?",
       "What kind of support would be most helpful for you right now?",
+      "Would you like help with identification or important documents?",
+      "We can help you understand what services you are eligible for.",
     ],
   },
 ];
