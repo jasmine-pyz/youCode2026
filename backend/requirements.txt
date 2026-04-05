@@ -19,6 +19,10 @@ packaging==26.0
 pydantic==2.12.5
 pydantic_core==2.41.5
 python-dotenv==1.1.1
+python-multipart
+torch
+transformers
+openai-whisper
 Pygments==2.20.0
 PyYAML==6.0.3
 rich==14.3.3
