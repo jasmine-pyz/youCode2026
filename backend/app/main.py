@@ -19,6 +19,7 @@ from huggingface_hub import InferenceClient
 import os, json, pathlib, re, tempfile
 import whisper
 from dotenv import load_dotenv
+import httpx
 
 
 # flake8:noqa
