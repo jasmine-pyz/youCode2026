@@ -1,8 +1,8 @@
 {
-  "name": "CommonGround",
-  "short_name": "CommonGround",
-  "description": "Multilingual communication for shelters. Speak in any language, see and hear the translation.",
-  "start_url": "/",
+  "name": "Hearth",
+  "short_name": "Hearth",
+  "description": "Real-time translation for shelter staff and residents. Speak any language, face to face.",
+  "start_url": "/app",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#FFFDF8",
