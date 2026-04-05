@@ -6,6 +6,9 @@ from huggingface_hub import InferenceClient
 from dotenv import load_dotenv
 import os, json, pathlib, re
 
+from .aggression import check_aggression
+from .notify import send_sms_alert
+
 # flake8: noqa
 app = FastAPI()
 app.add_middleware(
@@ -123,6 +126,17 @@ def translate(req: TranslateRequest, request: Request):
             status_code=401, detail="No HuggingFace token. Add it in Settings."
         )
 
+    # Worker text is already English — check before translating to save API cost
+    if check_aggression(req.text):
+        send_sms_alert(req.text, req.text)
+        raise HTTPException(
+            status_code=422,
+            detail={
+                "error_code": "aggressive_content",
+                "message": "Message blocked: aggressive or threatening language detected.",
+            },
+        )
+
     model_id = MODELS.get(req.model_key, MODELS["global"])
     client = InferenceClient(model=model_id, token=token)
 
@@ -149,12 +163,26 @@ def detect_and_translate(req: TranslateRequest, request: Request):
 
     try:
         translation = _translate(client, req.text, "English")
+
+        # Check the English translation for aggressive content
+        if check_aggression(translation):
+            send_sms_alert(req.text, translation)
+            raise HTTPException(
+                status_code=422,
+                detail={
+                    "error_code": "aggressive_content",
+                    "message": "Message blocked: aggressive or threatening language detected.",
+                },
+            )
+
         return {
             "detected_language": language_name,
             "detected_language_code": language_code,
             "translation": translation,
             "model_used": model_id,
         }
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

@@ -142,7 +142,7 @@
   top: 80px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 100;
+  z-index: 200;
   background: #5c2020;
   color: white;
   padding: 8px 16px;
