@@ -2,8 +2,13 @@
 
 import { useState } from "react";
 import { useConversation } from "@/hooks";
-import { MicButton, ConversationThread, SupportPanel } from "@/components";
+import { MicButton, ConversationThread, SupportPanel, TextInputBar } from "@/components";
+import { RegionPicker } from "@/components/RegionPicker";
+import { getHearThService } from "@/lib/hearth-translation-service";
 import styles from "./page.module.css";
+
+// Swap in HearThTranslationService — everything else in the UI is unchanged.
+const hearthService = getHearThService();
 
 export default function AppPage() {
   const [activeTab, setActiveTab] = useState<"talk" | "support">("talk");
@@ -15,10 +20,12 @@ export default function AppPage() {
     error,
     startRecording,
     stopRecording,
+    submitText,
     playMessage,
     sendMessage,
+    clearConversation,
     dismissError,
-  } = useConversation();
+  } = useConversation(hearthService);
 
   const isRecording = recordingState.status === "recording";
   const isProcessing = recordingState.status === "processing";
@@ -28,6 +35,10 @@ export default function AppPage() {
   function handlePromptSelect(text: string) {
     sendMessage(text, "bottom", true);
     setActiveTab("talk");
+  }
+
+  function handleClearSession() {
+    clearConversation();
   }
 
   return (
@@ -60,6 +71,8 @@ export default function AppPage() {
 
       {activeTab === "talk" ? (
         <>
+          <RegionPicker onClearSession={handleClearSession} />
+
           {/* Top mic — flipped for person across table */}
           <MicButton
             speaker="top"
@@ -70,7 +83,7 @@ export default function AppPage() {
             flipped
           />
 
-          {/* Top half — rotated conversation */}
+          {/* Top half — rotated conversation (resident side) */}
           <div className={`${styles.half} ${styles.top}`}>
             <ConversationThread
               messages={messages}
@@ -80,6 +93,11 @@ export default function AppPage() {
               isProcessing={isProcessing}
               onPlay={playMessage}
             />
+            <TextInputBar
+              speaker="top"
+              onSubmit={submitText}
+              isDisabled={recordingState.status !== "idle"}
+            />
           </div>
 
           {/* Center divider */}
@@ -87,7 +105,7 @@ export default function AppPage() {
             <div className={styles.dividerLine} />
           </div>
 
-          {/* Bottom half — normal orientation */}
+          {/* Bottom half — normal orientation (worker side) */}
           <div className={styles.half}>
             <ConversationThread
               messages={messages}
@@ -96,6 +114,11 @@ export default function AppPage() {
               isRecording={recordingSpeaker === "bottom"}
               isProcessing={isProcessing}
               onPlay={playMessage}
+            />
+            <TextInputBar
+              speaker="bottom"
+              onSubmit={submitText}
+              isDisabled={recordingState.status !== "idle"}
             />
           </div>
 

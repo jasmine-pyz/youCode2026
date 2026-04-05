@@ -88,6 +88,8 @@ export interface TranslateParams {
 export interface TranslateResult {
   translatedText: string;
   targetLanguage: DetectedLanguage;
+  /** Set when the source language was auto-detected by the backend */
+  detectedSourceLanguage?: DetectedLanguage;
 }
 
 // ─── TTS playback state ───
