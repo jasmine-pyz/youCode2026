@@ -124,8 +124,8 @@ Implement the transcript save and review feature entirely in the Next.js fronten
     - Delete button triggers confirm dialog
     - _Requirements: 2.3, 4.1_
 
-- [ ] 7. Implement `TranscriptViewer` component
-  - [-] 7.1 Create `frontend/components/TranscriptViewer.tsx` and `TranscriptViewer.module.css`
+- [x] 7. Implement `TranscriptViewer` component
+  - [x] 7.1 Create `frontend/components/TranscriptViewer.tsx` and `TranscriptViewer.module.css`
     - Props: `transcript: SavedTranscript`, `onBack: () => void`
     - Renders messages in ascending `timestamp` order
     - Each message row shows: speaker role label, original text, translated text, detected source language code, target language code, formatted time from `timestamp`
@@ -153,7 +153,7 @@ Implement the transcript save and review feature entirely in the Next.js fronten
     - _Requirements: 3.2, 3.3, 3.4_
 
 - [ ] 8. Implement `TranscriptOverlay` component
-  - [~] 8.1 Create `frontend/components/TranscriptOverlay.tsx` and `TranscriptOverlay.module.css`
+  - [-] 8.1 Create `frontend/components/TranscriptOverlay.tsx` and `TranscriptOverlay.module.css`
     - Props: `transcripts: SavedTranscript[]`, `onDelete: (id: string) => void`, `onClose: () => void`
     - Internal state: `activeTranscriptId: string | null`
     - `position: absolute; inset: 0` within the `.half` container — covers bottom half only
