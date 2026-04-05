@@ -10,8 +10,8 @@
   --color-divider: #e8e0d6;
 
   /* ── WCAG AAA compliant text colors ── */
-  --color-text-on-warmth: #635b56;
-  --color-text-on-warmth-muted: #635b56;
+  --color-text-on-warmth: #3d2218; /* 7.17:1 on #e6a886 — AAA */
+  --color-text-on-warmth-muted: #635b56; /* 3.27:1 — use only for large/bold text */
   --color-text-on-sand: #635b56;
   --color-text-on-sand-muted: #635b56;
   --color-text-on-cream-muted: #635b56;

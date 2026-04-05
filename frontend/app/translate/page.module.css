@@ -98,14 +98,14 @@
   font-family: "Nunito", sans-serif;
   font-size: 13px;
   font-weight: 700;
-  color: #9a908a;
+  color: #635b56;
   cursor: pointer;
   transition: color 0.2s;
   white-space: nowrap;
 }
 
 .tabActive {
-  color: #ffffff;
+  color: #3d2218;
   opacity: 1;
 }
 
