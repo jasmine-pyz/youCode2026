@@ -30,6 +30,17 @@ export interface TranslationResult {
   ttsAudioUrl?: string;
 }
 
+export interface SavedTranscript {
+  /** UUID v4 — assigned at save time */
+  id: string;
+  /** Auto-generated: "Session – Mon 14 Jul, 09:32" */
+  title: string;
+  /** Unix ms timestamp of when the transcript was saved */
+  savedAt: number;
+  /** Copy of the messages array at save time */
+  messages: TranslationResult[];
+}
+
 // ─── Recording state machine ───
 
 export type RecordingState =
