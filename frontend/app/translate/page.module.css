@@ -7,7 +7,6 @@
   flex-direction: column;
   position: relative;
   overflow: hidden;
-  /* Contain touch/scroll within the app shell */
   touch-action: none;
 }
 
@@ -44,31 +43,63 @@
   background: var(--color-divider);
 }
 
-/* #5C5047 on #FFFDF8 = 7.67:1 ✅ AAA */
-.resetBtn {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: none;
-  background: var(--color-cream);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
+/* ── Persistent tab bar ── */
+
+.persistentTab {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 100;
+}
+
+.tabBar {
   position: relative;
-  z-index: 2;
-  box-shadow: 0 0 0 6px var(--color-cream);
-  color: #5c5047;
-}
-
-.resetBtn:hover {
+  display: flex;
+  width: 152px;
   background: var(--color-sand);
-  box-shadow: 0 0 0 6px var(--color-sand);
+  border-radius: 100px;
+  padding: 3px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-.resetBtn:active {
-  transform: scale(0.9) rotate(-45deg);
+.slider {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  bottom: 3px;
+  width: calc(50% - 3px);
+  background: var(--color-warmth);
+  border-radius: 100px;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.sliderRight {
+  transform: translateX(100%);
+}
+
+.tab {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  padding: 7px 0;
+  text-align: center;
+  border-radius: 100px;
+  border: none;
+  background: transparent;
+  font-family: "Nunito", sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: color 0.2s;
+  white-space: nowrap;
+  opacity: 0.5;
+}
+
+.tabActive {
+  color: #ffffff;
+  opacity: 1;
 }
 
 /* ── Error toast ── */

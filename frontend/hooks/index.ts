@@ -8,7 +8,7 @@ import type {
   TranslationService,
   DetectedLanguage,
 } from "@/types";
-import { getTranslationService } from "@/lib/translation-service";
+import { getTranslationService, makeDetectedLanguage } from "@/lib/translation-service";
 
 // ─── useConversation ───
 // Manages the full conversation state: messages, recording, translation, playback.
@@ -20,6 +20,7 @@ interface UseConversationReturn {
   error: string | null;
   startRecording: (speaker: Speaker) => Promise<void>;
   stopRecording: (speaker: Speaker) => Promise<void>;
+  sendMessage: (text: string, speaker: Speaker, autoPlay?: boolean) => Promise<void>;
   submitText: (text: string, speaker: Speaker) => Promise<void>;
   playMessage: (messageId: string) => Promise<void>;
   clearConversation: () => void;
@@ -176,6 +177,39 @@ export function useConversation(
     [messages, playingId, svc]
   );
 
+  const sendMessage = useCallback(
+    async (text: string, speaker: Speaker, autoPlay = false) => {
+      if (recordingStateRef.current.status !== "idle") return;
+      setRecordingState({ status: "processing", speaker });
+      try {
+        const translateResult = await svc.translate({ text, sourceLanguage: "en" });
+        const message: TranslationResult = {
+          id: `msg-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+          speaker,
+          detectedLanguage: makeDetectedLanguage("en"),
+          targetLanguage: translateResult.targetLanguage,
+          originalText: text,
+          translatedText: translateResult.translatedText,
+          timestamp: Date.now(),
+        };
+        setMessages((prev) => [...prev, message]);
+        setRecordingState({ status: "idle" });
+        if (autoPlay) {
+          try {
+            setPlayingId(message.id);
+            await svc.speak(message.translatedText, message.targetLanguage.code);
+          } catch { } finally {
+            setPlayingId(null);
+          }
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to send message");
+        setRecordingState({ status: "idle" });
+      }
+    },
+    [svc]
+  );
+
   const clearConversation = useCallback(() => {
     setMessages([]);
     setRecordingState({ status: "idle" });
@@ -191,6 +225,7 @@ export function useConversation(
     error,
     startRecording,
     stopRecording,
+    sendMessage,
     submitText,
     playMessage,
     clearConversation,
