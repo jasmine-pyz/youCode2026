@@ -400,19 +400,90 @@ export class HearThTranslationService implements TranslationService {
         reject(new Error("SpeechSynthesis not supported"));
         return;
       }
+
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = languageCode;
       utterance.rate = 0.9;
 
       const voices = speechSynthesis.getVoices();
-      const match = voices.find((v) =>
-        v.lang.toLowerCase().startsWith(languageCode.toLowerCase())
+
+      const FEMALE_VOICES = [
+        "samantha",
+        "flo",
+        "sandy",
+        "shelley",
+        "grandma",
+        "alice",
+        "alva",
+        "amélie",
+        "amira",
+        "anna",
+        "carmit",
+        "catherine",
+        "damayanti",
+        "daria",
+        "ellen",
+        "helena",
+        "ioana",
+        "joana",
+        "kanya",
+        "karen",
+        "kathy",
+        "kyoko",
+        "lana",
+        "laura",
+        "lekha",
+        "lesya",
+        "linh",
+        "luciana",
+        "marie",
+        "martha",
+        "meijia",
+        "melina",
+        "milena",
+        "moira",
+        "montse",
+        "mónica",
+        "nora",
+        "paulina",
+        "sara",
+        "satu",
+        "sinji",
+        "tessa",
+        "tina",
+        "tingting",
+        "tünde",
+        "vani",
+        "yuna",
+        "zosia",
+        "zuzana",
+        "google uk english female",
+      ];
+
+      const isFemale = (v: SpeechSynthesisVoice) =>
+        FEMALE_VOICES.some((f) => v.name.toLowerCase().includes(f));
+
+      const langCode = languageCode.toLowerCase().startsWith("zh")
+        ? "zh"
+        : languageCode.toLowerCase();
+
+      const langVoices = voices.filter((v) =>
+        v.lang.toLowerCase().startsWith(langCode)
       );
+
+      const match =
+        langVoices.find(isFemale) || langVoices[0] || voices.find(isFemale);
+
+      console.log("[HearTh] selected voice:", match?.name, match?.lang);
+      console.log(
+        "[HearTh] lang voices:",
+        langVoices.map((v) => v.name)
+      );
+
       if (match) utterance.voice = match;
 
       utterance.onend = () => resolve("");
       utterance.onerror = (e) => reject(new Error(`TTS error: ${e.error}`));
-
       speechSynthesis.cancel();
       speechSynthesis.speak(utterance);
     });
