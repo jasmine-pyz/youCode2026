@@ -60,3 +60,48 @@
   opacity: 0.35;
   cursor: not-allowed;
 }
+
+.toggleWrap {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  padding: 4px 0;
+}
+
+.toggleBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--color-muted, #a89880);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s;
+}
+
+.toggleBtn:hover {
+  color: var(--color-text);
+}
+
+.hideBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--color-muted, #a89880);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+
+.hideBtn:hover {
+  color: var(--color-text);
+}

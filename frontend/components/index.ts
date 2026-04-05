@@ -9,4 +9,5 @@ export {
   SpeakerIcon,
   PlayingIcon,
   ResetIcon,
+  KeyboardIcon,
 } from "./Icons";

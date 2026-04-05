@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
+import { KeyboardIcon } from "./Icons";
 import type { Speaker } from "@/types";
 import styles from "./TextInputBar.module.css";
 
@@ -12,10 +13,11 @@ interface TextInputBarProps {
 
 export function TextInputBar({ speaker, onSubmit, isDisabled }: TextInputBarProps) {
   const [text, setText] = useState("");
+  const [visible, setVisible] = useState(false);
   const taRef = useRef<HTMLTextAreaElement>(null);
 
   const placeholder =
-    speaker === "top" ? "Type in any language…" : "Type in English…";
+    speaker === "top" ? "Type in any language\u2026" : "Type in English\u2026";
 
   const handleSubmit = useCallback(async () => {
     const value = text.trim();
@@ -44,6 +46,20 @@ export function TextInputBar({ speaker, onSubmit, isDisabled }: TextInputBarProp
     ta.style.height = `${Math.min(ta.scrollHeight, 96)}px`;
   }, []);
 
+  if (!visible) {
+    return (
+      <div className={styles.toggleWrap}>
+        <button
+          className={styles.toggleBtn}
+          onClick={() => setVisible(true)}
+          aria-label="Show keyboard input"
+        >
+          <KeyboardIcon size={18} />
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.bar}>
       <textarea
@@ -63,6 +79,13 @@ export function TextInputBar({ speaker, onSubmit, isDisabled }: TextInputBarProp
         aria-label="Send"
       >
         ↑
+      </button>
+      <button
+        className={styles.hideBtn}
+        onClick={() => setVisible(false)}
+        aria-label="Hide keyboard input"
+      >
+        ×
       </button>
     </div>
   );

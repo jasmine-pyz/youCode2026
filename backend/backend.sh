@@ -12,6 +12,12 @@ if ! command -v "$PYTHON_BIN" >/dev/null 2>&1; then
   exit 1
 fi
 
+if ! command -v ffmpeg >/dev/null 2>&1; then
+  echo "ffmpeg is required for Whisper audio processing but was not found." >&2
+  echo "Install it: brew install ffmpeg (macOS) or apt install ffmpeg (Linux)" >&2
+  exit 1
+fi
+
 if [[ ! -x "$VENV_DIR/bin/python" ]]; then
   echo "Creating backend virtual environment..."
   "$PYTHON_BIN" -m venv "$VENV_DIR"

@@ -64,6 +64,14 @@ export function getRegionKey(): RegionKey {
   return _regionKey;
 }
 
+export function setSessionLanguages(
+  resident: DetectedLanguage,
+  residentName: string
+): void {
+  _residentLanguage = resident;
+  _residentLanguageName = residentName;
+}
+
 export function clearSession(): void {
   _residentLanguage = null;
   _residentLanguageName = null;
@@ -289,6 +297,31 @@ export class HearThTranslationService implements TranslationService {
     return {
       translatedText: data.translation,
       targetLanguage: _residentLanguage,
+    };
+  }
+
+  // ── Language detection via Whisper ──
+
+  async detectLanguage(
+    audioBlob: Blob
+  ): Promise<{ code: string; name: string }> {
+    const formData = new FormData();
+    formData.append("audio", audioBlob, "hello.webm");
+
+    const res = await fetch(`${this.base}/detect-language`, {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: res.statusText }));
+      throw new Error(err.detail || "Language detection failed");
+    }
+
+    const data = await res.json();
+    return {
+      code: data.detected_language_code,
+      name: data.detected_language_name,
     };
   }
 

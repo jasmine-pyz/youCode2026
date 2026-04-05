@@ -1,10 +1,10 @@
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from huggingface_hub import InferenceClient
 from dotenv import load_dotenv
-import os, json, pathlib, re
+import os, json, pathlib, re, tempfile
 
 # flake8: noqa
 app = FastAPI()
@@ -17,6 +17,20 @@ BACKEND_DIR = pathlib.Path(__file__).resolve().parent.parent
 
 # Load environment variables from backend/.env (if present)
 load_dotenv(BACKEND_DIR / ".env")
+
+_whisper_model = None
+
+
+def _get_whisper():
+    global _whisper_model
+    if _whisper_model is None:
+        import whisper
+
+        print("Loading Whisper small...")
+        _whisper_model = whisper.load_model("small")
+        print("Whisper ready.")
+    return _whisper_model
+
 
 MODELS = {
     "global": "CohereLabs/tiny-aya-global",
@@ -72,11 +86,15 @@ def _translate(client: InferenceClient, text: str, target_lang: str) -> str:
             {
                 "role": "user",
                 "content": (
-                    f"Translate this text to {target_lang}.\n"
-                    f"Text: {text}\n"
-                    f"{target_lang} translation:"
+                    f"Translate the following text to {target_lang}. "
+                    f"Respond with ONLY the {target_lang} translation and nothing else.\n\n"
+                    f'"{text}"'
                 ),
-            }
+            },
+            {
+                "role": "assistant",
+                "content": f"{target_lang}:",
+            },
         ],
         max_tokens=512,
         temperature=0.1,
@@ -101,6 +119,9 @@ def _translate(client: InferenceClient, text: str, target_lang: str) -> str:
     # If model gives options like "X" or "Y", take the first
     if '" or "' in translation:
         translation = translation.split('" or "')[0].strip('"').strip()
+
+    # Strip wrapping quotes the model may add (ASCII and CJK)
+    translation = translation.strip('""\u201c\u201d\u300c\u300d')
 
     return translation
 
@@ -153,6 +174,35 @@ def detect_and_translate(req: TranslateRequest, request: Request):
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/detect-language")
+async def detect_language(audio: UploadFile = File(...)):
+    """Accept audio, run Whisper, return detected language."""
+    suffix = pathlib.Path(audio.filename or "audio.webm").suffix or ".webm"
+    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+        tmp.write(await audio.read())
+        tmp_path = tmp.name
+
+    try:
+        model = _get_whisper()
+        result = model.transcribe(tmp_path)
+        detected_code = result.get("language", "und")
+
+        from whisper.tokenizer import LANGUAGES
+
+        detected_name = LANGUAGES.get(detected_code, "Unknown").title()
+
+        return {
+            "detected_language_code": detected_code,
+            "detected_language_name": detected_name,
+            "transcript": result.get("text", "").strip(),
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if os.path.exists(tmp_path):
+            os.unlink(tmp_path)
 
 
 # Serve frontend — must be last

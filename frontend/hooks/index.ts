@@ -9,6 +9,138 @@ import type {
   DetectedLanguage,
 } from "@/types";
 import { getTranslationService } from "@/lib/translation-service";
+import { getFlag } from "@/lib/translation-service";
+import type { HearThTranslationService } from "@/lib/hearth-translation-service";
+import {
+  setSessionLanguages,
+  clearSession,
+} from "@/lib/hearth-translation-service";
+
+// ─── Types ───
+
+export type AppPhase = "init" | "conversation";
+
+export interface SpeakerLanguage {
+  speaker: Speaker;
+  detectedLanguage: DetectedLanguage;
+  languageName: string;
+}
+
+// ─── useInitialization ───
+// Manages the "say hello" phase before conversation begins.
+
+export function useInitialization(service: HearThTranslationService) {
+  const [phase, setPhase] = useState<AppPhase>("init");
+  const [topLanguage, setTopLanguage] = useState<SpeakerLanguage | null>(null);
+  const [bottomLanguage, setBottomLanguage] = useState<SpeakerLanguage | null>(
+    null
+  );
+  const [initRecordingState, setInitRecordingState] = useState<RecordingState>({
+    status: "idle",
+  });
+  const [initError, setInitError] = useState<string | null>(null);
+
+  const recordingHandleRef = useRef<any>(null);
+  const initRecordingStateRef = useRef(initRecordingState);
+  initRecordingStateRef.current = initRecordingState;
+
+  const startInitRecording = useCallback(
+    async (speaker: Speaker) => {
+      if (initRecordingStateRef.current.status !== "idle") return;
+      try {
+        setInitError(null);
+        setInitRecordingState({ status: "recording", speaker });
+        const handle = await service.startRecording();
+        recordingHandleRef.current = handle;
+      } catch (err) {
+        setInitError(
+          err instanceof Error ? err.message : "Failed to start recording"
+        );
+        setInitRecordingState({ status: "idle" });
+      }
+    },
+    [service]
+  );
+
+  const stopInitRecording = useCallback(
+    async (speaker: Speaker) => {
+      const current = initRecordingStateRef.current;
+      if (current.status !== "recording" || current.speaker !== speaker) return;
+
+      const handle = recordingHandleRef.current;
+      if (!handle) return;
+      recordingHandleRef.current = null;
+
+      try {
+        setInitRecordingState({ status: "processing", speaker });
+        const result = await service.stopRecording(handle);
+
+        if (!result.audioBlob) {
+          throw new Error("No audio captured. Please try again.");
+        }
+
+        const detected = await service.detectLanguage(result.audioBlob);
+
+        const speakerLang: SpeakerLanguage = {
+          speaker,
+          detectedLanguage: {
+            code: detected.code,
+            flag: getFlag(detected.code),
+            confidence: 0.95,
+          },
+          languageName: detected.name,
+        };
+
+        if (speaker === "top") {
+          setTopLanguage(speakerLang);
+        } else {
+          setBottomLanguage(speakerLang);
+        }
+
+        setInitRecordingState({ status: "idle" });
+      } catch (err) {
+        setInitError(
+          err instanceof Error ? err.message : "Language detection failed"
+        );
+        setInitRecordingState({ status: "idle" });
+      }
+    },
+    [service]
+  );
+
+  // Transition to conversation when both languages are detected
+  useEffect(() => {
+    if (topLanguage && bottomLanguage) {
+      // Determine which speaker is the "resident" (non-English)
+      const topIsEnglish = topLanguage.detectedLanguage.code === "en";
+      const resident = topIsEnglish ? bottomLanguage : topLanguage;
+
+      setSessionLanguages(resident.detectedLanguage, resident.languageName);
+      setPhase("conversation");
+    }
+  }, [topLanguage, bottomLanguage]);
+
+  const resetInit = useCallback(() => {
+    setPhase("init");
+    setTopLanguage(null);
+    setBottomLanguage(null);
+    setInitRecordingState({ status: "idle" });
+    setInitError(null);
+    clearSession();
+  }, []);
+
+  return {
+    phase,
+    topLanguage,
+    bottomLanguage,
+    initRecordingState,
+    initError,
+    startInitRecording,
+    stopInitRecording,
+    resetInit,
+    dismissInitError: useCallback(() => setInitError(null), []),
+  };
+}
 
 // ─── useConversation ───
 // Manages the full conversation state: messages, recording, translation, playback.
