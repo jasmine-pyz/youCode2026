@@ -66,8 +66,8 @@ Implement the transcript save and review feature entirely in the Next.js fronten
 - [x] 3. Checkpoint — Ensure all store tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 4. Implement `useTranscripts` hook
-  - [-] 4.1 Add `useTranscripts` to `frontend/hooks/index.ts`
+- [x] 4. Implement `useTranscripts` hook
+  - [x] 4.1 Add `useTranscripts` to `frontend/hooks/index.ts`
     - Import `makeStore` from `transcriptStore`; instantiate with `window.localStorage` (guard for SSR)
     - State: `transcripts: SavedTranscript[]`, `storageError: string | null`
     - `saveTranscript(messages)`: returns `{ ok: false, reason: "empty" }` if `messages.length === 0`; calls `store.add(makeTranscript(messages))`; catches `StorageFullError` → `{ ok: false, reason: "storage_full" }`; catches other errors → `{ ok: false, reason: "unavailable" }`; on success refreshes state and returns `{ ok: true }`
@@ -90,7 +90,7 @@ Implement the transcript save and review feature entirely in the Next.js fronten
     - _Requirements: 1.1, 1.3, 5.3_
 
 - [ ] 5. Implement `SaveButton` component
-  - [~] 5.1 Create `frontend/components/SaveButton.tsx` and `SaveButton.module.css`
+  - [-] 5.1 Create `frontend/components/SaveButton.tsx` and `SaveButton.module.css`
     - Props: `messages: TranslationResult[]`, `onSave: () => SaveResult`, `onClear: () => void`
     - Renders a floppy-disk / bookmark icon button
     - On tap: calls `onSave()`; shows inline toast — "Saved" on `{ ok: true }`, "Nothing to save yet" on `reason: "empty"`, "Storage full — delete old transcripts to save new ones" on `reason: "storage_full"`, "Transcripts unavailable on this device" on `reason: "unavailable"`
