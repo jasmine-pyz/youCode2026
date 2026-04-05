@@ -6,13 +6,13 @@ Implement the transcript save and review feature entirely in the Next.js fronten
 
 ## Tasks
 
-- [-] 1. Add `SavedTranscript` type and install fast-check
+- [x] 1. Add `SavedTranscript` type and install fast-check
   - Add `SavedTranscript` interface to `frontend/types/index.ts`
   - Run `npm install --save-dev fast-check` in `frontend/`
   - _Requirements: 1.1, 1.4, 5.4_
 
 - [ ] 2. Implement `transcriptStore` utility
-  - [~] 2.1 Create `frontend/lib/transcriptStore.ts`
+  - [-] 2.1 Create `frontend/lib/transcriptStore.ts`
     - Implement `StorageFullError` and `StorageUnavailableError` typed error classes
     - Implement `getAll()`: reads `"hearth_transcripts"` key, parses JSON, returns `SavedTranscript[]` sorted descending by `savedAt`; returns `[]` on parse error
     - Implement `add(transcript)`: reads current array, appends, re-serializes; throws `StorageFullError` on `QuotaExceededError`, `StorageUnavailableError` on other errors
