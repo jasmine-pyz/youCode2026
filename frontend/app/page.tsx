@@ -6,7 +6,7 @@ export default function LandingPage() {
     <main className={styles.page}>
       <h1 className={styles.title}>Hearth</h1>
       <p className={styles.subtitle}>Real-time translation, face to face</p>
-      <Link href="/app" className={styles.cta}>
+      <Link href="/translate" className={styles.cta}>
         Start conversation
       </Link>
     </main>
