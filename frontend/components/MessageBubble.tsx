@@ -44,7 +44,9 @@ export function MessageBubble({
     >
       <div className={styles.langRow}>
         <span className={styles.langBadge}>
-          {message.detectedLanguage.flag} {getLanguageName(message.detectedLanguage.code)}
+          {message.speaker === "bottom"
+            ? `${message.targetLanguage.flag} ${getLanguageName(message.targetLanguage.code)}`
+            : `${message.detectedLanguage.flag} ${getLanguageName(message.detectedLanguage.code)}`}
         </span>
       </div>
       <div className={styles.original}>{message.originalText}</div>

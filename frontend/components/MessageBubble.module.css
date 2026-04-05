@@ -27,7 +27,7 @@
 /* Beige = "other" (the other person's messages) */
 .fromOther {
   align-self: flex-start;
-  background: var(--color-sand);
+  background: #fef5ec;
   border-bottom-left-radius: 4px;
 }
 
