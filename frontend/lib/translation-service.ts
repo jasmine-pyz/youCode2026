@@ -37,10 +37,10 @@ const LANGUAGE_FLAGS: Record<string, string> = {
   zh: "🇨🇳",
   "zh-CN": "🇨🇳",
   "zh-TW": "🇹🇼",
-  yue: "🇭🇰",       // Cantonese
-  pa: "🇮🇳",        // Punjabi
-  fa: "🇮🇷",        // Farsi / Persian
-  vi: "🇻🇳",        // Vietnamese
+  yue: "🇭🇰", // Cantonese
+  pa: "🇮🇳", // Punjabi
+  fa: "🇮🇷", // Farsi / Persian
+  vi: "🇻🇳", // Vietnamese
   am: "🇪🇹",
   tl: "🇵🇭",
   de: "🇩🇪",
@@ -72,7 +72,9 @@ function makeDetectedLanguage(
 
 // ─── Web Speech API implementation ───
 
-type SpeechRecognitionType = typeof window extends { SpeechRecognition: infer T }
+type SpeechRecognitionType = typeof window extends {
+  SpeechRecognition: infer T;
+}
   ? T
   : any;
 
