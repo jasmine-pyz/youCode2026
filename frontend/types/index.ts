@@ -83,6 +83,7 @@ export interface TranslateParams {
   text: string;
   sourceLanguage: string;
   targetLanguage?: string; // if omitted, auto-detect best target
+  speaker?: Speaker;
 }
 
 export interface TranslateResult {

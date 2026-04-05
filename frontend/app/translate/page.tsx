@@ -1,16 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useConversation } from "@/hooks";
-import { MicButton, ConversationThread, SupportPanel, TextInputBar } from "@/components";
+import {
+  MicButton,
+  ConversationThread,
+  SupportPanel,
+  TextInputBar,
+} from "@/components";
 import { RegionPicker } from "@/components/RegionPicker";
 import { getHearThService } from "@/lib/hearth-translation-service";
 import styles from "./page.module.css";
 
-// Swap in HearThTranslationService — everything else in the UI is unchanged.
-const hearthService = getHearThService();
-
 export default function AppPage() {
+  const hearthServiceRef = useRef<ReturnType<typeof getHearThService> | null>(
+    null
+  );
+  if (!hearthServiceRef.current) {
+    hearthServiceRef.current = getHearThService();
+  }
+  const hearthService = hearthServiceRef.current;
   const [activeTab, setActiveTab] = useState<"talk" | "support">("talk");
 
   const {
@@ -53,15 +62,23 @@ export default function AppPage() {
       {/* Persistent tab bar — top right */}
       <div className={styles.persistentTab}>
         <div className={styles.tabBar}>
-          <div className={`${styles.slider} ${activeTab === "support" ? styles.sliderRight : ""}`} />
+          <div
+            className={`${styles.slider} ${
+              activeTab === "support" ? styles.sliderRight : ""
+            }`}
+          />
           <button
-            className={`${styles.tab} ${activeTab === "talk" ? styles.tabActive : ""}`}
+            className={`${styles.tab} ${
+              activeTab === "talk" ? styles.tabActive : ""
+            }`}
             onClick={() => setActiveTab("talk")}
           >
             Talk
           </button>
           <button
-            className={`${styles.tab} ${activeTab === "support" ? styles.tabActive : ""}`}
+            className={`${styles.tab} ${
+              activeTab === "support" ? styles.tabActive : ""
+            }`}
             onClick={() => setActiveTab("support")}
           >
             Support

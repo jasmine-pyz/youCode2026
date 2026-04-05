@@ -1,20 +1,9 @@
 /**
  * HearThTranslationService
  *
- * Implements TranslationService using:
- * - Web Speech API for STT (same as the existing service)
- * - Tiny Aya (via FastAPI backend) for translation
- * - Web SpeechSynthesis for TTS (Phase 0 — swap for better TTS in Phase 1)
- *
- * Drop-in replacement for WebSpeechTranslationService.
- * Nothing in the hook or UI components changes.
- *
- * Session logic:
- * - First non-English speaker → their language is stored as residentLanguage
- * - Worker (English speaker) → translates INTO residentLanguage
- * - Resident → always translates INTO English
- * - Region model (earth/fire/water/global) can be set at any time
- *   to improve translation quality without changing the language direction
+ * STT:  Whisper via FastAPI /process     (language detection + transcript)
+ * MT:   Aya via FastAPI /translate       (translation only, no lang detection)
+ * TTS:  Web SpeechSynthesis (Phase 0)
  */
 
 import type {
@@ -25,9 +14,48 @@ import type {
   TranslateResult,
   DetectedLanguage,
 } from "@/types";
-import { makeDetectedLanguage, getFlag } from "./translation-service";
 
-// ─── Region → model key ───
+// ─── Region model keys ────────────────────────────────────────────────────────
+
+const LANGUAGE_FLAGS: Record<string, string> = {
+  en: "🇬🇧",
+  es: "🇪🇸",
+  ar: "🇸🇦",
+  uk: "🇺🇦",
+  fr: "🇫🇷",
+  zh: "🇨🇳",
+  yue: "🇭🇰", // Cantonese
+  pa: "🇮🇳", // Punjabi
+  fa: "🇮🇷", // Farsi / Persian
+  vi: "🇻🇳", // Vietnamese
+  am: "🇪🇹",
+  tl: "🇵🇭",
+  de: "🇩🇪",
+  pt: "🇧🇷",
+  ru: "🇷🇺",
+  ja: "🇯🇵",
+  ko: "🇰🇷",
+  hi: "🇮🇳",
+  sw: "🇰🇪",
+  so: "🇸🇴",
+  ti: "🇪🇷",
+};
+
+function getFlag(langCode: string): string {
+  const base = langCode.split("-")[0].toLowerCase();
+  return LANGUAGE_FLAGS[langCode] || LANGUAGE_FLAGS[base] || "🌐";
+}
+
+function makeDetectedLanguage(
+  code: string,
+  confidence: number = 0.9
+): DetectedLanguage {
+  return {
+    code: code.split("-")[0].toLowerCase(),
+    flag: getFlag(code),
+    confidence,
+  };
+}
 
 export type RegionKey = "global" | "earth" | "fire" | "water";
 
@@ -45,25 +73,63 @@ export const REGION_DESCRIPTIONS: Record<RegionKey, string> = {
   water: "Asia-Pacific",
 };
 
-// ─── Session state (module-level singleton) ───
-// Kept outside the class so it survives service re-instantiation.
+// ─── Language code → full name (mirrors server.py) ───────────────────────────
+
+const LANG_CODE_TO_NAME: Record<string, string> = {
+  en: "English",
+  fr: "French",
+  ar: "Arabic",
+  so: "Somali",
+  ti: "Tigrinya",
+  om: "Oromo",
+  am: "Amharic",
+  es: "Spanish",
+  pt: "Portuguese",
+  de: "German",
+  it: "Italian",
+  nl: "Dutch",
+  ru: "Russian",
+  zh: "Chinese",
+  ja: "Japanese",
+  ko: "Korean",
+  hi: "Hindi",
+  ur: "Urdu",
+  fa: "Persian",
+  tr: "Turkish",
+  sw: "Swahili",
+  ha: "Hausa",
+  yo: "Yoruba",
+  ig: "Igbo",
+  vi: "Vietnamese",
+  th: "Thai",
+  id: "Indonesian",
+  ms: "Malay",
+  tl: "Filipino",
+  bn: "Bengali",
+  ta: "Tamil",
+  uk: "Ukrainian",
+  pl: "Polish",
+  el: "Greek",
+  he: "Hebrew",
+  fi: "Finnish",
+  sv: "Swedish",
+};
+
+// ─── Session state (module-level singleton) ───────────────────────────────────
 
 let _residentLanguage: DetectedLanguage | null = null;
-let _residentLanguageName: string | null = null; // full name e.g. "French"
+let _residentLanguageName: string | null = null;
 let _regionKey: RegionKey = "global";
 
 export function getResidentLanguage(): DetectedLanguage | null {
   return _residentLanguage;
 }
-
 export function setRegionKey(key: RegionKey): void {
   _regionKey = key;
 }
-
 export function getRegionKey(): RegionKey {
   return _regionKey;
 }
-
 export function clearSession(): void {
   _residentLanguage = null;
   _residentLanguageName = null;
@@ -78,20 +144,7 @@ export function setResidentLanguageManual(name: string, code: string, flag: stri
   _residentLanguageName = name;
 }
 
-// ─── Recording infrastructure (shared with existing service) ───
-
-interface ActiveRecording {
-  recognition: any;
-  transcript: string;
-  detectedLang: string;
-  mediaRecorder?: MediaRecorder;
-  audioChunks: Blob[];
-}
-
-let activeRecording: ActiveRecording | null = null;
-let recordingCounter = 0;
-
-// ─── localStorage helpers (safe for SSR) ───
+// ─── localStorage helpers (safe for SSR) ─────────────────────────────────────
 
 function storedToken(): string {
   try {
@@ -100,147 +153,172 @@ function storedToken(): string {
     return "";
   }
 }
-
 function storedServer(): string {
   try {
-    return localStorage.getItem("hearth_server") || "http://localhost:8000";
+    return (
+      localStorage.getItem("hearth_server") ||
+      process.env.NEXT_PUBLIC_BACKEND_URL ||
+      "http://localhost:8000"
+    );
   } catch {
-    return "http://localhost:8000";
+    return process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
   }
 }
 
-// ─── HearThTranslationService ───
+// ─── Recording state ──────────────────────────────────────────────────────────
+
+interface ActiveRecording {
+  mediaRecorder: MediaRecorder;
+  audioChunks: Blob[];
+}
+
+let activeRecording: ActiveRecording | null = null;
+let recordingCounter = 0;
+
+// ─── HearThTranslationService ─────────────────────────────────────────────────
 
 export class HearThTranslationService implements TranslationService {
-  constructor() {}
-
-  /** Resolves the backend base URL at call-time from localStorage */
   private get base(): string {
     return storedServer();
   }
 
-  // ── STT: identical to WebSpeechTranslationService ──
+  // ── STT: start ──────────────────────────────────────────────────────────────
 
   async startRecording(): Promise<RecordingHandle> {
     if (activeRecording) throw new Error("Already recording");
 
     const id = `rec-${++recordingCounter}`;
+    console.log(`[HearTh] startRecording → ${id}`);
 
-    const SpeechRecognition =
-      (window as any).SpeechRecognition ||
-      (window as any).webkitSpeechRecognition;
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    console.log(
+      `[HearTh] mic acquired:`,
+      stream.getAudioTracks().map((t) => t.label)
+    );
 
-    if (!SpeechRecognition) {
-      throw new Error(
-        "SpeechRecognition not supported. Use Chrome, Edge, or Safari."
-      );
-    }
+    const mimeType = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
+      ? "audio/webm;codecs=opus"
+      : MediaRecorder.isTypeSupported("audio/webm")
+      ? "audio/webm"
+      : "audio/mp4";
 
-    const recognition = new SpeechRecognition();
-    recognition.continuous = true;
-    recognition.interimResults = false;
-
-    let mediaRecorder: MediaRecorder | undefined;
+    console.log(`[HearTh] mimeType: ${mimeType}`);
+    const mediaRecorder = new MediaRecorder(stream, { mimeType });
     const audioChunks: Blob[] = [];
 
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorder = new MediaRecorder(stream);
-      mediaRecorder.ondataavailable = (e) => {
-        if (e.data.size > 0) audioChunks.push(e.data);
-      };
-      mediaRecorder.start();
-    } catch {
-      console.warn("Raw audio capture unavailable");
-    }
+    mediaRecorder.ondataavailable = (e) => {
+      if (e.data.size > 0) audioChunks.push(e.data);
+      console.log(`[HearTh] chunk: ${e.data.size} bytes`);
+    };
+    mediaRecorder.onstart = () => console.log(`[HearTh] MediaRecorder started`);
+    mediaRecorder.onstop = () =>
+      console.log(
+        `[HearTh] MediaRecorder stopped, chunks: ${audioChunks.length}`
+      );
+    mediaRecorder.onerror = (e) =>
+      console.error(`[HearTh] MediaRecorder error:`, e);
 
-    return new Promise<RecordingHandle>((resolve) => {
-      activeRecording = {
-        recognition,
-        transcript: "",
-        detectedLang: "en",
-        mediaRecorder,
-        audioChunks,
-      };
-
-      recognition.onresult = (event: any) => {
-        let full = "";
-        for (let i = 0; i < event.results.length; i++) {
-          if (event.results[i].isFinal) full += event.results[i][0].transcript;
-        }
-        activeRecording!.transcript = full;
-        const latest = event.results[event.results.length - 1];
-        if (latest[0].lang) activeRecording!.detectedLang = latest[0].lang;
-      };
-
-      recognition.onerror = (event: any) => {
-        if (event.error !== "aborted") {
-          console.error("Speech recognition error:", event.error);
-          activeRecording = null;
-        }
-      };
-
-      recognition.start();
-      resolve({ id });
-    });
+    mediaRecorder.start(100);
+    activeRecording = { mediaRecorder, audioChunks };
+    return { id };
   }
+
+  // ── STT: stop → POST to Whisper ─────────────────────────────────────────────
 
   async stopRecording(_handle: RecordingHandle): Promise<RecordingResult> {
     if (!activeRecording) throw new Error("No active recording");
+    console.log(`[HearTh] stopRecording called`);
 
     const rec = activeRecording;
-    rec.recognition.stop();
+    activeRecording = null;
 
-    if (rec.mediaRecorder && rec.mediaRecorder.state !== "inactive") {
+    await new Promise<void>((resolve) => {
+      rec.mediaRecorder.onstop = () => resolve();
       rec.mediaRecorder.stop();
-      rec.mediaRecorder.stream.getTracks().forEach((t) => t.stop());
+    });
+    rec.mediaRecorder.stream.getTracks().forEach((t) => t.stop());
+
+    console.log(`[HearTh] total chunks: ${rec.audioChunks.length}`);
+    if (rec.audioChunks.length === 0) {
+      throw new Error("No audio captured — please try again.");
     }
 
-    await new Promise((r) => setTimeout(r, 300));
+    const audioBlob = new Blob(rec.audioChunks, {
+      type: rec.mediaRecorder.mimeType,
+    });
+    console.log(
+      `[HearTh] blob: ${audioBlob.size} bytes, type: ${audioBlob.type}`
+    );
 
-    const audioBlob =
-      rec.audioChunks.length > 0
-        ? new Blob(rec.audioChunks, { type: "audio/webm" })
-        : undefined;
+    const form = new FormData();
+    form.append("audio", audioBlob, "recording.webm");
 
-    const result: RecordingResult = {
-      transcript: rec.transcript,
-      detectedLanguage: makeDetectedLanguage(rec.detectedLang),
+    console.log(`[HearTh] POST ${this.base}/process`);
+    const res = await fetch(`${this.base}/process`, {
+      method: "POST",
+      headers: { "X-HF-Token": storedToken() },
+      body: form,
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: res.statusText }));
+      throw new Error(err.detail || "Whisper transcription failed");
+    }
+
+    const data = await res.json();
+    console.log(`[HearTh] /process response:`, data);
+
+    const detectedCode: string = data.detected_language ?? "en";
+    return {
+      transcript: data.transcript,
+      detectedLanguage: {
+        code: detectedCode,
+        flag: getFlag(detectedCode),
+        confidence: 0.95,
+      },
       audioBlob,
     };
-
-    activeRecording = null;
-    return result;
   }
 
-  // ── Translation: Tiny Aya via FastAPI backend ──
+  // ── Translation ──────────────────────────────────────────────────────────────
 
   async translate(params: TranslateParams): Promise<TranslateResult> {
-    // "en" = worker speaking English → translate into resident's language
-    // anything else (including "auto") = resident → detect + translate to English
-
-    const isWorker = params.sourceLanguage === "en";
-
-    if (isWorker) {
-      // Worker speaking English → translate into resident's detected language
-      return this._workerTranslate(params.text);
-    } else {
-      // Resident speaking → detect language (already done by STT) + translate to English
-      return this._residentTranslate(params.text, params.sourceLanguage);
-    }
+    const isWorker = params.speaker === "bottom"; // ← use speaker, not language code
+    return isWorker
+      ? this._workerTranslate(params.text)
+      : this._residentTranslate(params.text, params.sourceLanguage);
   }
 
+  // Resident → Aya translates to English.
+  //
+  // Talk mode: sttDetectedCode is a real code from Whisper (e.g. "zh", "ar").
+  //            We pass the known language name; backend just translates.
+  //
+  // Type mode: sttDetectedCode is "und".
+  //            Backend auto-detects the language and returns its name.
+  //            We store whatever name the server sends back — not the "Unknown"
+  //            we sent in, which was the original bug.
   private async _residentTranslate(
     text: string,
     sttDetectedCode: string
   ): Promise<TranslateResult> {
+    const isUndetermined = sttDetectedCode === "und";
+    const sttDetectedName = isUndetermined
+      ? "Unknown"
+      : LANG_CODE_TO_NAME[sttDetectedCode] ?? sttDetectedCode;
+
     const res = await fetch(`${this.base}/detect-and-translate`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "X-HF-Token": storedToken(),
       },
-      body: JSON.stringify({ text, model_key: _regionKey }),
+      body: JSON.stringify({
+        text,
+        model_key: _regionKey,
+        detected_language_code: sttDetectedCode,
+        detected_language_name: sttDetectedName,
+      }),
     });
 
     if (!res.ok) {
@@ -249,29 +327,50 @@ export class HearThTranslationService implements TranslationService {
     }
 
     const data = await res.json();
-    console.log("[HearTh] detect-and-translate response:", data); // ← ADD THIS
+    console.log(`[HearTh] /detect-and-translate response:`, data);
 
-    _residentLanguageName = data.detected_language || null;
-    const detectedCode = data.detected_language_code || sttDetectedCode;
+    // ── Key fix: always use the name the SERVER returns, not what we sent. ──
+    // In talk mode these are the same. In type mode the server runs Aya
+    // auto-detect and returns the real language name (e.g. "Chinese").
+    const resolvedLanguageName: string = data.detected_language;
 
-    _residentLanguage = {
-      code: detectedCode,
-      flag: getFlag(detectedCode),
-      confidence: 0.9,
-    };
+    // Code: trust Whisper in talk mode; in type mode we stay "und" for now
+    // because Aya doesn't reliably return ISO codes. The name is enough for
+    // the /translate direction.
+    const resolvedCode: string = isUndetermined
+      ? sttDetectedCode // "und" — we don't have a better code
+      : data.detected_language_code;
+
+    // Only update session state if we got a real language name back
+    if (
+      resolvedLanguageName &&
+      resolvedLanguageName.toLowerCase() !== "unknown"
+    ) {
+      _residentLanguageName = resolvedLanguageName;
+      _residentLanguage = {
+        code: resolvedCode,
+        flag: getFlag(resolvedCode),
+        confidence: 0.95,
+      };
+    }
 
     return {
-      translatedText: data.translation, 
+      translatedText: data.translation,
       targetLanguage: makeDetectedLanguage("en"),
-      detectedSourceLanguage: _residentLanguage ?? undefined,
+      detectedSourceLanguage: _residentLanguage ?? {
+        code: resolvedCode,
+        flag: getFlag(resolvedCode),
+        confidence: 0.95,
+      },
     };
   }
 
+  // Worker (English) → Aya translates to resident's language.
+  // Throws a user-friendly error if resident hasn't spoken/typed yet.
   private async _workerTranslate(text: string): Promise<TranslateResult> {
     if (!_residentLanguage || !_residentLanguageName) {
-      // Resident hasn't spoken yet — show a helpful error instead of silent passthrough
       throw new Error(
-        "Please have the resident speak or type first so their language can be detected."
+        "Have the resident speak or type first so their language can be detected."
       );
     }
 
@@ -284,7 +383,7 @@ export class HearThTranslationService implements TranslationService {
       body: JSON.stringify({
         text,
         model_key: _regionKey,
-        target_lang: _residentLanguageName,
+        target_lang: _residentLanguageName, // ← now always a real name like "Chinese"
       }),
     });
 
@@ -294,6 +393,7 @@ export class HearThTranslationService implements TranslationService {
     }
 
     const data = await res.json();
+    console.log(`[HearTh] /translate response:`, data);
 
     return {
       translatedText: data.translation,
@@ -301,7 +401,7 @@ export class HearThTranslationService implements TranslationService {
     };
   }
 
-  // ── TTS: browser SpeechSynthesis (Phase 0) ──
+  // ── TTS: browser SpeechSynthesis (Phase 0) ───────────────────────────────────
 
   async speak(text: string, languageCode: string): Promise<string> {
     return new Promise((resolve, reject) => {
@@ -309,32 +409,101 @@ export class HearThTranslationService implements TranslationService {
         reject(new Error("SpeechSynthesis not supported"));
         return;
       }
+
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = languageCode;
       utterance.rate = 0.9;
 
       const voices = speechSynthesis.getVoices();
-      const match = voices.find((v) =>
-        v.lang.toLowerCase().startsWith(languageCode.toLowerCase())
+
+      const FEMALE_VOICES = [
+        "samantha",
+        "flo",
+        "sandy",
+        "shelley",
+        "grandma",
+        "alice",
+        "alva",
+        "amélie",
+        "amira",
+        "anna",
+        "carmit",
+        "catherine",
+        "damayanti",
+        "daria",
+        "ellen",
+        "helena",
+        "ioana",
+        "joana",
+        "kanya",
+        "karen",
+        "kathy",
+        "kyoko",
+        "lana",
+        "laura",
+        "lekha",
+        "lesya",
+        "linh",
+        "luciana",
+        "marie",
+        "martha",
+        "meijia",
+        "melina",
+        "milena",
+        "moira",
+        "montse",
+        "mónica",
+        "nora",
+        "paulina",
+        "sara",
+        "satu",
+        "sinji",
+        "tessa",
+        "tina",
+        "tingting",
+        "tünde",
+        "vani",
+        "yuna",
+        "zosia",
+        "zuzana",
+        "google uk english female",
+      ];
+
+      const isFemale = (v: SpeechSynthesisVoice) =>
+        FEMALE_VOICES.some((f) => v.name.toLowerCase().includes(f));
+
+      const langCode = languageCode.toLowerCase().startsWith("zh")
+        ? "zh"
+        : languageCode.toLowerCase();
+
+      const langVoices = voices.filter((v) =>
+        v.lang.toLowerCase().startsWith(langCode)
       );
+
+      const match =
+        langVoices.find(isFemale) || langVoices[0] || voices.find(isFemale);
+
+      console.log("[HearTh] selected voice:", match?.name, match?.lang);
+      console.log(
+        "[HearTh] lang voices:",
+        langVoices.map((v) => v.name)
+      );
+
       if (match) utterance.voice = match;
 
       utterance.onend = () => resolve("");
       utterance.onerror = (e) => reject(new Error(`TTS error: ${e.error}`));
-
       speechSynthesis.cancel();
       speechSynthesis.speak(utterance);
     });
   }
 }
 
-// ─── Singleton ───
+// ─── Singleton ────────────────────────────────────────────────────────────────
 
 let _instance: HearThTranslationService | null = null;
 
 export function getHearThService(): HearThTranslationService {
-  if (!_instance) {
-    _instance = new HearThTranslationService();
-  }
+  if (!_instance) _instance = new HearThTranslationService();
   return _instance;
 }
