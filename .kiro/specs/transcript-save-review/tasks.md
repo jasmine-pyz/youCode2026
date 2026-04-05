@@ -11,8 +11,8 @@ Implement the transcript save and review feature entirely in the Next.js fronten
   - Run `npm install --save-dev fast-check` in `frontend/`
   - _Requirements: 1.1, 1.4, 5.4_
 
-- [ ] 2. Implement `transcriptStore` utility
-  - [-] 2.1 Create `frontend/lib/transcriptStore.ts`
+- [x] 2. Implement `transcriptStore` utility
+  - [x] 2.1 Create `frontend/lib/transcriptStore.ts`
     - Implement `StorageFullError` and `StorageUnavailableError` typed error classes
     - Implement `getAll()`: reads `"hearth_transcripts"` key, parses JSON, returns `SavedTranscript[]` sorted descending by `savedAt`; returns `[]` on parse error
     - Implement `add(transcript)`: reads current array, appends, re-serializes; throws `StorageFullError` on `QuotaExceededError`, `StorageUnavailableError` on other errors
@@ -63,11 +63,11 @@ Implement the transcript save and review feature entirely in the Next.js fronten
     - `StorageUnavailableError` on unavailable storage
     - _Requirements: 1.2, 5.3, 6.1_
 
-- [~] 3. Checkpoint — Ensure all store tests pass
+- [x] 3. Checkpoint — Ensure all store tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 4. Implement `useTranscripts` hook
-  - [~] 4.1 Add `useTranscripts` to `frontend/hooks/index.ts`
+  - [-] 4.1 Add `useTranscripts` to `frontend/hooks/index.ts`
     - Import `makeStore` from `transcriptStore`; instantiate with `window.localStorage` (guard for SSR)
     - State: `transcripts: SavedTranscript[]`, `storageError: string | null`
     - `saveTranscript(messages)`: returns `{ ok: false, reason: "empty" }` if `messages.length === 0`; calls `store.add(makeTranscript(messages))`; catches `StorageFullError` → `{ ok: false, reason: "storage_full" }`; catches other errors → `{ ok: false, reason: "unavailable" }`; on success refreshes state and returns `{ ok: true }`
