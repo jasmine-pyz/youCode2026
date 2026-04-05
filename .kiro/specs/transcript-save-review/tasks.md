@@ -178,12 +178,12 @@ Implement the transcript save and review feature entirely in the Next.js fronten
 - [x] 9. Checkpoint — Ensure all component tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 10. Export new components and wire into `page.tsx`
-  - [-] 10.1 Add exports to `frontend/components/index.ts`
+- [x] 10. Export new components and wire into `page.tsx`
+  - [x] 10.1 Add exports to `frontend/components/index.ts`
     - Export `SaveButton`, `TranscriptOverlay`, `TranscriptList`, `TranscriptViewer`
     - _Requirements: 2.4_
 
-  - [-] 10.2 Wire `SaveButton` and `TranscriptOverlay` into `frontend/app/translate/page.tsx`
+  - [x] 10.2 Wire `SaveButton` and `TranscriptOverlay` into `frontend/app/translate/page.tsx`
     - Import `useTranscripts` from `@/hooks`
     - Import `SaveButton`, `TranscriptOverlay` from `@/components`
     - Add `showOverlay: boolean` state (default `false`)
@@ -193,7 +193,7 @@ Implement the transcript save and review feature entirely in the Next.js fronten
     - Surface `storageError` via the existing error toast pattern; call `dismissStorageError` on dismiss
     - _Requirements: 1.1, 1.5, 2.4, 4.3, 5.3, 6.1, 7.1, 7.2, 7.3_
 
-- [~] 11. Final checkpoint — Ensure all tests pass
+- [x] 11. Final checkpoint — Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes

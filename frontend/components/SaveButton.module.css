@@ -34,7 +34,7 @@
 
 .toast {
   position: absolute;
-  top: calc(100% + 8px);
+  bottom: calc(100% + 8px);
   left: 50%;
   transform: translateX(-50%);
   white-space: nowrap;
@@ -79,7 +79,7 @@
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateX(-50%) translateY(-4px);
+    transform: translateX(-50%) translateY(4px);
   }
   to {
     opacity: 1;

@@ -163,17 +163,20 @@ export default function AppPage() {
               onSubmit={submitText}
               isDisabled={recordingState.status !== "idle"}
             />
-            <SaveButton
-              onSave={() => saveTranscript(messages)}
-              onClear={clearConversation}
-            />
-            <button
-              aria-label="View saved transcripts"
-              onClick={() => setShowOverlay(true)}
-              style={{ background: "none", border: "none", fontSize: "1.5rem", cursor: "pointer", padding: "4px 8px" }}
-            >
-              📋
-            </button>
+            {/* Transcript controls — pinned to bottom-right, out of flow */}
+            <div className={styles.transcriptControls}>
+              <SaveButton
+                onSave={() => saveTranscript(messages)}
+                onClear={clearConversation}
+              />
+              <button
+                className={styles.transcriptBtn}
+                aria-label="View saved transcripts"
+                onClick={() => setShowOverlay(true)}
+              >
+                📋
+              </button>
+            </div>
           </div>
         </div>
 
