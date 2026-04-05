@@ -1,15 +1,25 @@
+"use client";
 
-import Link from "next/link";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
 
 export default function LandingPage() {
+  const router = useRouter();
+  const [leaving, setLeaving] = useState(false);
+
+  function handleStart() {
+    setLeaving(true);
+    setTimeout(() => router.push("/translate"), 200);
+  }
+
   return (
-    <main className={styles.page}>
+    <main className={`${styles.page} ${leaving ? styles.fadeOut : ""}`}>
       <h1 className={styles.title}>Hearth</h1>
       <p className={styles.subtitle}>Real-time translation, face to face</p>
-      <Link href="/translate" className={styles.cta}>
+      <button className={styles.cta} onClick={handleStart}>
         Start conversation
-      </Link>
+      </button>
     </main>
   );
 }

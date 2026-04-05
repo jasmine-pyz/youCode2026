@@ -2,13 +2,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 6px 12px;
-  background: var(--surface, #fff);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-  flex-shrink: 0;
+  width: 100%;
+  padding: 0 16px;
   gap: 8px;
-  /* Rotated 180deg because it sits above the flipped top mic */
-  transform: rotate(180deg);
 }
 
 .regionGroup {
@@ -21,23 +17,24 @@
   font-weight: 600;
   padding: 4px 9px;
   border-radius: 20px;
-  border: 1px solid rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(61, 50, 40, 0.2);
   background: transparent;
-  color: #666;
+  color: var(--color-text-on-cream-muted);
   cursor: pointer;
   transition: all 0.15s;
   line-height: 1;
+  font-family: "Nunito", sans-serif;
 }
 
 .regionBtn:hover {
-  border-color: #185fa5;
-  color: #185fa5;
+  border-color: var(--color-warmth);
+  color: var(--color-text);
 }
 
 .regionBtn.active {
-  background: #185fa5;
+  background: var(--color-warmth);
   color: #fff;
-  border-color: #185fa5;
+  border-color: var(--color-warmth);
 }
 
 .sessionState {
@@ -55,15 +52,16 @@
 .langCode {
   font-size: 11px;
   font-weight: 700;
-  color: #085041;
-  background: #f0faf5;
+  color: #5e5650;
+  background: var(--color-sand);
   padding: 2px 6px;
   border-radius: 4px;
+  font-family: "Nunito", sans-serif;
 }
 
 .clearBtn {
   font-size: 11px;
-  color: #999;
+  color: var(--color-text-on-cream-muted);
   background: none;
   border: none;
   cursor: pointer;
@@ -72,11 +70,12 @@
 }
 
 .clearBtn:hover {
-  color: #333;
+  color: var(--color-text);
 }
 
 .waiting {
   font-size: 11px;
-  color: #bbb;
+  color: var(--color-text-on-cream-muted);
   font-style: italic;
+  font-family: "Nunito", sans-serif;
 }

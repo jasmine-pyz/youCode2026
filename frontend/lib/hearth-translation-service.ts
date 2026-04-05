@@ -69,6 +69,15 @@ export function clearSession(): void {
   _residentLanguageName = null;
 }
 
+export function setResidentLanguageManual(name: string, code: string, flag: string): void {
+  _residentLanguage = {
+    code,
+    flag,
+    confidence: 1,
+  };
+  _residentLanguageName = name;
+}
+
 // ─── Recording infrastructure (shared with existing service) ───
 
 interface ActiveRecording {
