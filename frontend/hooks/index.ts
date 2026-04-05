@@ -6,6 +6,7 @@ import type {
   RecordingState,
   Speaker,
   TranslationService,
+  DetectedLanguage,
 } from "@/types";
 import { getTranslationService, makeDetectedLanguage } from "@/lib/translation-service";
 
@@ -20,6 +21,7 @@ interface UseConversationReturn {
   startRecording: (speaker: Speaker) => Promise<void>;
   stopRecording: (speaker: Speaker) => Promise<void>;
   sendMessage: (text: string, speaker: Speaker, autoPlay?: boolean) => Promise<void>;
+  submitText: (text: string, speaker: Speaker) => Promise<void>;
   playMessage: (messageId: string) => Promise<void>;
   clearConversation: () => void;
   dismissError: () => void;
@@ -115,6 +117,49 @@ export function useConversation(
     [svc]
   );
 
+  const submitText = useCallback(
+    async (text: string, speaker: Speaker) => {
+      if (!text.trim() || recordingStateRef.current.status !== "idle") return;
+
+      setError(null);
+      setRecordingState({ status: "processing", speaker });
+
+      try {
+        // top = resident side → pass non-"en" so service routes to _residentTranslate
+        // bottom = worker side → pass "en" so service routes to _workerTranslate
+        const sourceLanguage = speaker === "bottom" ? "en" : "und"; // "und" = undetermined
+
+        const translateResult = await svc.translate({ text, sourceLanguage });
+
+        const detectedLang: DetectedLanguage =
+          translateResult.detectedSourceLanguage ?? {
+            code: speaker === "bottom" ? "en" : "und",
+            flag: speaker === "bottom" ? "🇬🇧" : "🌐",
+            confidence: 1,
+          };
+
+        const message: TranslationResult = {
+          id: `msg-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+          speaker,
+          detectedLanguage: detectedLang,
+          targetLanguage: translateResult.targetLanguage,
+          originalText: text,
+          translatedText: translateResult.translatedText,
+          timestamp: Date.now(),
+        };
+
+        setMessages((prev) => [...prev, message]);
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Translation failed";
+        setError(message);
+      } finally {
+        setRecordingState({ status: "idle" });
+      }
+    },
+    [svc]
+  );
+
   const playMessage = useCallback(
     async (messageId: string) => {
       const msg = messages.find((m) => m.id === messageId);
@@ -181,6 +226,7 @@ export function useConversation(
     startRecording,
     stopRecording,
     sendMessage,
+    submitText,
     playMessage,
     clearConversation,
     dismissError,
