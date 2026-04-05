@@ -1,7 +1,12 @@
 "use client";
 
 import { useConversation } from "@/hooks";
-import { MicButton, ConversationThread, ResetIcon, TextInputBar } from "@/components";
+import {
+  MicButton,
+  ConversationThread,
+  ResetIcon,
+  TextInputBar,
+} from "@/components";
 import { RegionPicker } from "@/components/RegionPicker";
 import { getHearThService } from "@/lib/hearth-translation-service";
 import styles from "./page.module.css";
@@ -117,3 +122,6 @@ export default function Home() {
         onStart={startRecording}
         onStop={stopRecording}
       />
+    </main>
+  );
+}
