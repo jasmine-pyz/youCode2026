@@ -8,11 +8,12 @@ import type {
   TranslationService,
   DetectedLanguage,
 } from "@/types";
-import { getTranslationService, makeDetectedLanguage } from "@/lib/translation-service";
 
 // ─── useConversation ───
 // Manages the full conversation state: messages, recording, translation, playback.
-
+function makeDetectedLanguage(code: string, confidence = 0.9) {
+  return { code: code.split("-")[0].toLowerCase(), flag: "🇬🇧", confidence };
+}
 interface UseConversationReturn {
   messages: TranslationResult[];
   recordingState: RecordingState;
@@ -20,7 +21,11 @@ interface UseConversationReturn {
   error: string | null;
   startRecording: (speaker: Speaker) => Promise<void>;
   stopRecording: (speaker: Speaker) => Promise<void>;
-  sendMessage: (text: string, speaker: Speaker, autoPlay?: boolean) => Promise<void>;
+  sendMessage: (
+    text: string,
+    speaker: Speaker,
+    autoPlay?: boolean
+  ) => Promise<void>;
   submitText: (text: string, speaker: Speaker) => Promise<void>;
   playMessage: (messageId: string) => Promise<void>;
   clearConversation: () => void;
@@ -28,7 +33,7 @@ interface UseConversationReturn {
 }
 
 export function useConversation(
-  service?: TranslationService
+  service: TranslationService
 ): UseConversationReturn {
   const [messages, setMessages] = useState<TranslationResult[]>([]);
   const [recordingState, setRecordingState] = useState<RecordingState>({
@@ -37,7 +42,6 @@ export function useConversation(
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const recordingHandleRef = useRef<any>(null);
-  const svc = service || getTranslationService();
 
   // Keep a ref in sync with recordingState so callbacks always see
   // the latest value without needing it in their dependency arrays.
@@ -51,7 +55,7 @@ export function useConversation(
       try {
         setError(null);
         setRecordingState({ status: "recording", speaker });
-        const handle = await svc.startRecording();
+        const handle = await service.startRecording();
         recordingHandleRef.current = handle;
       } catch (err) {
         const message =
@@ -60,7 +64,7 @@ export function useConversation(
         setRecordingState({ status: "idle" });
       }
     },
-    [svc]
+    [service]
   );
 
   const stopRecording = useCallback(
@@ -81,7 +85,7 @@ export function useConversation(
         setRecordingState({ status: "processing", speaker });
 
         // 1. Stop recording → get transcript + detected language
-        const recordingResult = await svc.stopRecording(handle);
+        const recordingResult = await service.stopRecording(handle);
 
         if (!recordingResult.transcript.trim()) {
           setRecordingState({ status: "idle" });
@@ -89,8 +93,9 @@ export function useConversation(
         }
 
         // 2. Translate the transcript
-        const translateResult = await svc.translate({
+        const translateResult = await service.translate({
           text: recordingResult.transcript,
+          speaker, // ← add this
           sourceLanguage: recordingResult.detectedLanguage.code,
         });
 
@@ -114,7 +119,7 @@ export function useConversation(
         setRecordingState({ status: "idle" });
       }
     },
-    [svc]
+    [service]
   );
 
   const submitText = useCallback(
@@ -129,7 +134,10 @@ export function useConversation(
         // bottom = worker side → pass "en" so service routes to _workerTranslate
         const sourceLanguage = speaker === "bottom" ? "en" : "und"; // "und" = undetermined
 
-        const translateResult = await svc.translate({ text, sourceLanguage });
+        const translateResult = await service.translate({
+          text,
+          sourceLanguage,
+        });
 
         const detectedLang: DetectedLanguage =
           translateResult.detectedSourceLanguage ?? {
@@ -157,7 +165,7 @@ export function useConversation(
         setRecordingState({ status: "idle" });
       }
     },
-    [svc]
+    [service]
   );
 
   const playMessage = useCallback(
@@ -167,14 +175,14 @@ export function useConversation(
 
       try {
         setPlayingId(messageId);
-        await svc.speak(msg.translatedText, msg.targetLanguage.code);
+        await service.speak(msg.translatedText, msg.targetLanguage.code);
       } catch (err) {
         console.warn("TTS playback failed:", err);
       } finally {
         setPlayingId(null);
       }
     },
-    [messages, playingId, svc]
+    [messages, playingId, service]
   );
 
   const sendMessage = useCallback(
@@ -182,7 +190,10 @@ export function useConversation(
       if (recordingStateRef.current.status !== "idle") return;
       setRecordingState({ status: "processing", speaker });
       try {
-        const translateResult = await svc.translate({ text, sourceLanguage: "en" });
+        const translateResult = await service.translate({
+          text,
+          sourceLanguage: "en",
+        });
         const message: TranslationResult = {
           id: `msg-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
           speaker,
@@ -197,8 +208,12 @@ export function useConversation(
         if (autoPlay) {
           try {
             setPlayingId(message.id);
-            await svc.speak(message.translatedText, message.targetLanguage.code);
-          } catch { } finally {
+            await service.speak(
+              message.translatedText,
+              message.targetLanguage.code
+            );
+          } catch {
+          } finally {
             setPlayingId(null);
           }
         }
@@ -207,7 +222,7 @@ export function useConversation(
         setRecordingState({ status: "idle" });
       }
     },
-    [svc]
+    [service]
   );
 
   const clearConversation = useCallback(() => {
