@@ -11,3 +11,7 @@ export {
   PlayingIcon,
   ResetIcon,
 } from "./Icons";
+export { SaveButton } from "./SaveButton";
+export { default as TranscriptOverlay } from "./TranscriptOverlay";
+export { default as TranscriptList } from "./TranscriptList";
+export { default as TranscriptViewer } from "./TranscriptViewer";

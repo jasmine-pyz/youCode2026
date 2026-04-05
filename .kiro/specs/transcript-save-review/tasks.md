@@ -152,8 +152,8 @@ Implement the transcript save and review feature entirely in the Next.js fronten
     - Back button calls `onBack`
     - _Requirements: 3.2, 3.3, 3.4_
 
-- [ ] 8. Implement `TranscriptOverlay` component
-  - [-] 8.1 Create `frontend/components/TranscriptOverlay.tsx` and `TranscriptOverlay.module.css`
+- [x] 8. Implement `TranscriptOverlay` component
+  - [x] 8.1 Create `frontend/components/TranscriptOverlay.tsx` and `TranscriptOverlay.module.css`
     - Props: `transcripts: SavedTranscript[]`, `onDelete: (id: string) => void`, `onClose: () => void`
     - Internal state: `activeTranscriptId: string | null`
     - `position: absolute; inset: 0` within the `.half` container — covers bottom half only
@@ -175,15 +175,15 @@ Implement the transcript save and review feature entirely in the Next.js fronten
     - Back in viewer returns to list
     - _Requirements: 3.4, 7.1_
 
-- [~] 9. Checkpoint — Ensure all component tests pass
+- [x] 9. Checkpoint — Ensure all component tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 10. Export new components and wire into `page.tsx`
-  - [~] 10.1 Add exports to `frontend/components/index.ts`
+  - [-] 10.1 Add exports to `frontend/components/index.ts`
     - Export `SaveButton`, `TranscriptOverlay`, `TranscriptList`, `TranscriptViewer`
     - _Requirements: 2.4_
 
-  - [~] 10.2 Wire `SaveButton` and `TranscriptOverlay` into `frontend/app/translate/page.tsx`
+  - [-] 10.2 Wire `SaveButton` and `TranscriptOverlay` into `frontend/app/translate/page.tsx`
     - Import `useTranscripts` from `@/hooks`
     - Import `SaveButton`, `TranscriptOverlay` from `@/components`
     - Add `showOverlay: boolean` state (default `false`)
