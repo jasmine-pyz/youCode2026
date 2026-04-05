@@ -104,8 +104,8 @@ Implement the transcript save and review feature entirely in the Next.js fronten
     - "Clear & start new session" action calls `onClear`
     - _Requirements: 1.2, 1.3, 1.5_
 
-- [ ] 6. Implement `TranscriptList` component
-  - [-] 6.1 Create `frontend/components/TranscriptList.tsx` and `TranscriptList.module.css`
+- [x] 6. Implement `TranscriptList` component
+  - [x] 6.1 Create `frontend/components/TranscriptList.tsx` and `TranscriptList.module.css`
     - Props: `transcripts: SavedTranscript[]`, `onSelect: (id: string) => void`, `onDelete: (id: string) => void`
     - Renders scrollable list; each row shows title, formatted `savedAt` date, and message count
     - Shows "No saved transcripts yet" when list is empty (Requirement 2.3)
@@ -125,7 +125,7 @@ Implement the transcript save and review feature entirely in the Next.js fronten
     - _Requirements: 2.3, 4.1_
 
 - [ ] 7. Implement `TranscriptViewer` component
-  - [~] 7.1 Create `frontend/components/TranscriptViewer.tsx` and `TranscriptViewer.module.css`
+  - [-] 7.1 Create `frontend/components/TranscriptViewer.tsx` and `TranscriptViewer.module.css`
     - Props: `transcript: SavedTranscript`, `onBack: () => void`
     - Renders messages in ascending `timestamp` order
     - Each message row shows: speaker role label, original text, translated text, detected source language code, target language code, formatted time from `timestamp`
