@@ -107,7 +107,6 @@ Hearth is a privacy-first, on-device communication tool designed for shelter wor
 <br>
 
 ## User Flow
-
 <p align="center">
   <img src="frontend/public/screenshots/layout.png" alt="User flow layout" width="800"/>
 </p>
@@ -131,11 +130,20 @@ Hearth is a privacy-first, on-device communication tool designed for shelter wor
 - Automatically detects the spoken language and processes it without requiring any manual selection
 - Displays the translated text on screen and allows users to play the translated audio 
 - Provides a keyboard option that allows users to input text in any language
+- Allows users to select translation modes such as Auto, Earth, Fire, and Water, each designed to support different language groups
 
 <p align="center">
   <img src="frontend/public/screenshots/translation.png" alt="Translation screen" height="500"/>
 </p>
 
+### Translation Modes
+- Hearth provides multiple translation modes designed to better support different language groups and use cases:
+  - **Auto**: Automatically selects the most appropriate model based on the detected language, providing a seamless experience without requiring manual selection  
+  - **Fire**: Optimized for African language groups, designed to better handle low-resource and underrepresented languages  
+  - **Water**: Optimized for Middle Eastern language groups, improving translation quality for languages with complex structures and dialects  
+  - **Earth**: Optimized for South Asian language groups, supporting languages with diverse scripts and linguistic variations   
+
+<br>
 
 ### Support Screen
 - Provides categorized prompts to help initiate and guide conversations in shelter environments  
