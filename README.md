@@ -2,7 +2,7 @@
 <h2 align="center">(youCode 2026)</h2>
 
 <h2 align="center">
-  A multilingual communication tool for women’s shelters that leaves no one behind.
+  A multilingual communication tool that leaves no one behind.
 </h2>
 
 <br>
@@ -20,11 +20,10 @@
 <br>
 
 <h2 align="center">Awards</h2>
-
-<p align="center">
+<h3 align="center">
   🏆 1st Place in the Community Women’s Initiative (CWI) Experienced Stream<br>
   🥇 Diversity in CS Project Hub Winner
-</p>
+</h3>
 
 <br>
 
@@ -57,13 +56,13 @@ Shelter workers shared that:
 <table align="center">
   <tr>
     <td align="center" width="50%">
-      <img src="https://d112y698adiu2z.cloudfront.net/photos/production/software_photos/004/537/344/datas/gallery.jpg" width="100%"><br>
+      <img src="frontend/public/screenshots/limitations-existing-tools.jpg" alt="Limitations Of Existing Tools" width="100%"><br>
       <em>
         Google Translate output showing how inaccurate translations can distort meaning in sensitive or context-dependent conversations, leading to confusion and miscommunication.
       </em>
     </td>
     <td align="center" width="50%">
-      <img src="https://d112y698adiu2z.cloudfront.net/photos/production/software_photos/004/537/415/datas/gallery.jpg" width="100%"><br>
+      <img src="frontend/public/screenshots/limited-language-support.png" alt="Limited Language Support" width="100%"><br>
       <em>
         Google Translate interface highlighting limited language options, which can exclude low-resource and underserved language communities.
       </em>
@@ -109,53 +108,72 @@ Hearth is a privacy-first, on-device communication tool designed for shelter wor
 
 ## User Flow
 
-### 1. Landing Screen
-Landing screen where the user can start a conversation or translation.
-
 <p align="center">
-  <img src="frontend/public/screenshots/landing.png" height="500"/>
+  <img src="frontend/public/screenshots/layout.png" alt="User flow layout" width="800"/>
 </p>
 
-### 2. Translation Screen
-Translation shows a dual translation screen where the user can either click and hold the voice input button to speak in any language. It will detect the language automatically and translate it through voice → text → translation → speech. The translated text will appear on the screen and the user can click the speaker icon to play the speech. The user can also click the keyboard icon to bring up the text input field to input text in any language.
+<br>
 
+## Features
+
+### Landing Screen
+- Welcomes the user and provides a starting point for translated conversations
+- Designed to be simple and intuitive for easy use
+  
 <p align="center">
-  <img src="frontend/public/screenshots/translation.png" height="500"/>
+  <img src="frontend/public/screenshots/landing.png" alt="Landing screen" height="500"/>
 </p>
 
-### 3. Model Selection
-The user can select the type of Tiny Aya model, such as Fire, Water, Earth, and Air, where each model is specific to different low resource language groups.
+
+### Translation Screen
+- Enables real-time, two-way communication through voice → text → translation → speech
+- Allows users to press and hold the voice input button to speak in any language
+- Automatically detects the spoken language and processes it without requiring any manual selection
+- Displays the translated text on screen and allows users to play the translated audio 
+- Provides a keyboard option that allows users to input text in any language
 
 <p align="center">
-  <img src="frontend/public/screenshots/layout.png" width="800"/>
+  <img src="frontend/public/screenshots/translation.png" alt="Translation screen" height="500"/>
 </p>
 
-### 4. Support Page
-Support page gives users categories of prompts to initiate and navigate conversations in shelters. The user first selects a language at the top left and then selects any category.
+
+### Support Screen
+- Provides categorized prompts to help initiate and guide conversations in shelter environments  
+- Users can select a language from the top left before choosing a category  
+- Designed to reduce friction when navigating sensitive or complex interactions  
 
 <p align="center">
-  <img src="frontend/public/screenshots/support.png" height="500"/>
+  <img src="frontend/public/screenshots/support.png" alt="Support screen" height="500"/>
 </p>
 
-### 5. Prompt Page
-Then it will bring the user to the prompt page with a list of prompts they can select from. When a prompt is selected, it will translate it to the selected language and play the speech.
+
+### Prompt Screen
+- Displays a list of predefined prompts based on the selected category  
+- Selecting a prompt translates it into the chosen language and plays the speech automatically 
 
 <p align="center">
-  <img src="frontend/public/screenshots/prompt.png" height="500"/>
+  <img src="frontend/public/screenshots/prompt.png" alt="Prompt screen" height="500"/>
 </p>
 
-### 6. Harmful Language Detection
-There is also harmful language detection where if the user says harmful words or uses aggressive language, the translation is blocked and an alert is sent through text.
+### Harmful Language Detection and Alert
+- Detects harmful or aggressive language during interactions  
+- Blocks unsafe translations to prevent escalation or miscommunication  
+- Displays an alert message to notify users when such content is detected  
 
 <p align="center">
-  <img src="frontend/public/screenshots/alert.png" height="500"/>
+  <img src="frontend/public/screenshots/harmful-language-detection.png" alt="Harmful language detection" height="500"/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="frontend/public/screenshots/alert.png" alt="Alert screen" height="500"/>
 </p>
 
-### 7. Transcript Storage
-Transcript is also stored locally where conversations are stored locally and the retention rate can be adjusted to protect and ensure safety.
+
+### Conversation Transcript
+- Stores conversation history locally on the device  
+- Supports adjustable retention settings for privacy and safety  
+- Ensures sensitive communication is preserved securely without external storage  
 
 <p align="center">
-  <img src="frontend/public/screenshots/transcript.png" height="500"/>
+  <img src="frontend/public/screenshots/transcript.png" alt="Transcript screen" height="500"/>
 </p>
 
 <br>
