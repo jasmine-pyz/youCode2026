@@ -1,4 +1,4 @@
-# CommonGround
+# Hearth
 
 Multilingual communication app for shelters. Two people speak in any language — both see and hear the translation instantly.
 
@@ -13,7 +13,7 @@ npm run dev
 ## Architecture
 
 ```
-commonground/
+hearth/
 ├── app/
 │   ├── layout.tsx              # Root layout with PWA meta
 │   ├── page.tsx                # Main dual-mic conversation screen
@@ -160,7 +160,7 @@ Use a WebView wrapper. Options:
 1. **Capacitor** (recommended):
    ```bash
    npm install @capacitor/core @capacitor/cli
-   npx cap init CommonGround com.yourorg.commonground
+   npx cap init Hearth com.yourorg.hearth
    npx cap add ios
    npm run build
    npx cap sync

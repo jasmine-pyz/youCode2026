@@ -1,6 +1,6 @@
 // /// <reference lib="webworker" />
 
-// const CACHE_NAME = "commonground-v2";
+// const CACHE_NAME = "hearth-v2";
 
 // /**
 //  * Assets to precache for offline use.
@@ -97,7 +97,7 @@
 //   );
 // });
 
-const CACHE_NAME = "commonground-v2";
+const CACHE_NAME = "hearth-v2";
 
 const PRECACHE_URLS = ["/", "/manifest.json"];
 
