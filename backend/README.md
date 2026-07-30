@@ -8,21 +8,30 @@ Use [backend/backend.sh](backend/backend.sh) to set up the backend environment, 
 
 If `backend.sh` does not work, do it manually:
 
-1. Open a terminal in the backend folder.
-2. Create and activate a Python 3.11 virtual environment:
-   ```bash
-   python3.11 -m venv .venv
-   source .venv/bin/activate
-   ```
-3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-4. Create `backend/.env` and add your Hugging Face token:
-   ```env
-   HF_TOKEN=your_huggingface_token_here
-   ```
-5. Start the backend:
-   ```bash
-   uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-   ```
+**1. Set up environment variables**
+
+Create `backend/.env` and add your Hugging Face token.
+```bash
+HF_TOKEN=your_huggingface_token_here
+```
+
+**2. Set up the backend environment**
+
+Create and activate a Python virtual environment.
+```bash
+cd backend
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+**3. Install dependencies**
+
+```bash
+pip install -r requirements.txt
+```
+
+**4. Start the backend**
+
+```bash
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```

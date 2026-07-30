@@ -1,18 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// Proxy POST /api/translate → FastAPI /translate
+// Proxy POST /api/translate/process → FastAPI /process
 const BACKEND = process.env.BACKEND_URL ?? "http://localhost:8000";
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const res = await fetch(`${BACKEND}/translate`, {
+    const form = await request.formData();
+    const res = await fetch(`${BACKEND}/process`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
         "X-HF-Token": request.headers.get("X-HF-Token") ?? "",
       },
-      body: JSON.stringify(body),
+      body: form,
     });
     const data = await res.json();
     return NextResponse.json(data, { status: res.status });

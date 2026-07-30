@@ -7,16 +7,36 @@ import type { TranslationResult, Speaker } from "@/types";
 import styles from "./ConversationThread.module.css";
 
 const LANGUAGE_NAMES: Record<string, string> = {
-  en: "English",   es: "Español",    ar: "العربية",    uk: "Українська",
-  fr: "Français",  zh: "普通话",      yue: "廣東話",    pa: "ਪੰਜਾਬੀ",
-  fa: "فارسی",     vi: "Tiếng Việt", am: "አማርኛ",      tl: "Filipino",
-  de: "Deutsch",   pt: "Português",  ru: "Русский",    ja: "日本語",
-  ko: "한국어",     hi: "हिन्दी",      sw: "Kiswahili",  so: "Soomaali",
+  am: "አማርኛ",           ar: "العربية",         eu: "Euskara",
+  bn: "বাংলা",           bg: "Български",       my: "မြန်မာဘာသာ",
+  ca: "Català",          zh: "普通话",           hr: "Hrvatski",
+  cs: "Čeština",         da: "Dansk",           nl: "Nederlands",
+  en: "English",         et: "Eesti",           fi: "Suomi",
+  fr: "Français",        gl: "Galego",          de: "Deutsch",
+  el: "Ελληνικά",        gu: "ગુજરાતી",          ha: "Hausa",
+  he: "עברית",           hi: "हिन्दी",           hu: "Magyar",
+  ig: "Igbo",            id: "Bahasa Indonesia", ga: "Gaeilge",
+  it: "Italiano",        ja: "日本語",           jv: "Basa Jawa",
+  km: "ខ្មែរ",            ko: "한국어",           lo: "ລາວ",
+  lv: "Latviešu",        lt: "Lietuvių",        mg: "Malagasy",
+  ms: "Bahasa Melayu",   mt: "Malti",           mr: "मराठी",
+  ne: "नेपाली",           no: "Norsk",           fa: "فارسی",
+  pl: "Polski",          pt: "Português",       pa: "ਪੰਜਾਬੀ",
+  ro: "Română",          ru: "Русский",         sr: "Српски",
+  sn: "ChiShona",        sk: "Slovenčina",      sl: "Slovenščina",
+  es: "Español",         sw: "Kiswahili",       sv: "Svenska",
+  tl: "Filipino",        ta: "தமிழ்",            te: "తెలుగు",
+  th: "ไทย",             tr: "Türkçe",          uk: "Українська",
+  ur: "اردو",            vi: "Tiếng Việt",      cy: "Cymraeg",
+  wo: "Wolof",           xh: "isiXhosa",        yo: "Yorùbá",
+  zu: "isiZulu",         yue: "廣東話",          so: "Soomaali",
   ti: "ትግርኛ",
 };
 
 function getLanguageName(code: string): string {
-  return LANGUAGE_NAMES[code.split("-")[0].toLowerCase()] ?? code.toUpperCase();
+  const base = code.split("-")[0].toLowerCase();
+  if (base === "und") return "Undefined";
+  return LANGUAGE_NAMES[base] ?? code.toUpperCase();
 }
 
 interface ConversationThreadProps {

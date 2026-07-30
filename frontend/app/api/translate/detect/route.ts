@@ -8,7 +8,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const res = await fetch(`${BACKEND}/detect-and-translate`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "X-HF-Token": request.headers.get("X-HF-Token") ?? "",
+      },
       body: JSON.stringify(body),
     });
     const data = await res.json();

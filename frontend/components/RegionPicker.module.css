@@ -33,7 +33,7 @@
 
 .regionBtn.active {
   background: var(--color-warmth);
-  color: #fff;
+  color: var(--color-text-on-warmth);
   border-color: var(--color-warmth);
 }
 
@@ -78,4 +78,11 @@
   color: var(--color-text-on-cream-muted);
   font-style: italic;
   font-family: "Nunito", sans-serif;
+}
+
+/* This bar's tooltips need more clearance than the default — buttons are smaller/tighter here */
+.regionBtn[data-tooltip]::after,
+.langCode[data-tooltip]::after,
+.clearBtn[data-tooltip]::after {
+  bottom: calc(100% + 10px);
 }

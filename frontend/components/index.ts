@@ -1,9 +1,9 @@
 export { MicButton } from "./MicButton";
-export { MessageBubble } from "./MessageBubble";
 export { ConversationThread } from "./ConversationThread";
 export { Waveform } from "./Waveform";
 export { SupportPanel } from "./SupportPanel";
 export { TextInputBar } from "./TextInputBar";
+export { RegionPicker } from "./RegionPicker";
 export {
   MicIcon,
   StopIcon,

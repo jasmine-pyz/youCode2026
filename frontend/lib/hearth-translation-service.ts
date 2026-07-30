@@ -20,28 +20,26 @@ import type {
 const LANGUAGE_FLAGS: Record<string, string> = {
   en: "🇬🇧",
   es: "🇪🇸",
-  ar: "🇸🇦",
   uk: "🇺🇦",
   fr: "🇫🇷",
   zh: "🇨🇳",
   yue: "🇭🇰", // Cantonese
-  pa: "🇮🇳", // Punjabi
   fa: "🇮🇷", // Farsi / Persian
   vi: "🇻🇳", // Vietnamese
   am: "🇪🇹",
   tl: "🇵🇭",
   de: "🇩🇪",
-  pt: "🇧🇷",
+  pt: "🇵🇹",
   ru: "🇷🇺",
   ja: "🇯🇵",
   ko: "🇰🇷",
+  ms: "🇲🇾",
   hi: "🇮🇳",
-  sw: "🇰🇪",
   so: "🇸🇴",
   ti: "🇪🇷",
 };
 
-function getFlag(langCode: string): string {
+export function getFlag(langCode: string): string {
   const base = langCode.split("-")[0].toLowerCase();
   return LANGUAGE_FLAGS[langCode] || LANGUAGE_FLAGS[base] || "🌐";
 }
@@ -67,10 +65,10 @@ export const REGION_LABELS: Record<RegionKey, string> = {
 };
 
 export const REGION_DESCRIPTIONS: Record<RegionKey, string> = {
-  global: "All 70 languages",
+  global: "All languages",
   earth: "Africa + West Asia",
   fire: "South Asia",
-  water: "Asia-Pacific",
+  water: "Europe + Asia-Pacific",
 };
 
 // ─── Language code → full name (mirrors server.py) ───────────────────────────
@@ -113,7 +111,59 @@ const LANG_CODE_TO_NAME: Record<string, string> = {
   he: "Hebrew",
   fi: "Finnish",
   sv: "Swedish",
+  eu: "Basque",
+  bg: "Bulgarian",
+  my: "Burmese",
+  ca: "Catalan",
+  hr: "Croatian",
+  cs: "Czech",
+  da: "Danish",
+  et: "Estonian",
+  gl: "Galician",
+  gu: "Gujarati",
+  hu: "Hungarian",
+  ga: "Irish",
+  jv: "Javanese",
+  km: "Khmer",
+  lo: "Lao",
+  lv: "Latvian",
+  lt: "Lithuanian",
+  mg: "Malagasy",
+  mt: "Maltese",
+  mr: "Marathi",
+  ne: "Nepali",
+  no: "Norwegian",
+  pa: "Punjabi",
+  ro: "Romanian",
+  sr: "Serbian",
+  sn: "Shona",
+  sk: "Slovak",
+  sl: "Slovenian",
+  te: "Telugu",
+  cy: "Welsh",
+  wo: "Wolof",
+  xh: "Xhosa",
+  zu: "Zulu",
 };
+
+const NAME_TO_LANG_CODE: Record<string, string> = Object.fromEntries(
+  Object.entries(LANG_CODE_TO_NAME).map(([code, name]) => [name.toLowerCase(), code])
+);
+
+// Aya's detected language name doesn't always match our map exactly
+// (e.g. "Mandarin Chinese" vs "Chinese"), so fall back to a substring
+// match in either direction before giving up.
+function resolveLanguageCode(name: string | undefined): string | undefined {
+  if (!name) return undefined;
+  const normalized = name.toLowerCase().trim();
+  if (NAME_TO_LANG_CODE[normalized]) return NAME_TO_LANG_CODE[normalized];
+  for (const [knownName, code] of Object.entries(NAME_TO_LANG_CODE)) {
+    if (normalized.includes(knownName) || knownName.includes(normalized)) {
+      return code;
+    }
+  }
+  return undefined;
+}
 
 // ─── Session state (module-level singleton) ───────────────────────────────────
 
@@ -123,6 +173,9 @@ let _regionKey: RegionKey = "global";
 
 export function getResidentLanguage(): DetectedLanguage | null {
   return _residentLanguage;
+}
+export function getResidentLanguageName(): string | null {
+  return _residentLanguageName;
 }
 export function setRegionKey(key: RegionKey): void {
   _regionKey = key;
@@ -153,18 +206,6 @@ function storedToken(): string {
     return "";
   }
 }
-function storedServer(): string {
-  try {
-    return (
-      localStorage.getItem("hearth_server") ||
-      process.env.NEXT_PUBLIC_BACKEND_URL ||
-      "http://localhost:8000"
-    );
-  } catch {
-    return process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
-  }
-}
-
 // ─── Recording state ──────────────────────────────────────────────────────────
 
 interface ActiveRecording {
@@ -178,10 +219,6 @@ let recordingCounter = 0;
 // ─── HearThTranslationService ─────────────────────────────────────────────────
 
 export class HearThTranslationService implements TranslationService {
-  private get base(): string {
-    return storedServer();
-  }
-
   // ── STT: start ──────────────────────────────────────────────────────────────
 
   async startRecording(): Promise<RecordingHandle> {
@@ -253,8 +290,8 @@ export class HearThTranslationService implements TranslationService {
     const form = new FormData();
     form.append("audio", audioBlob, "recording.webm");
 
-    console.log(`[HearTh] POST ${this.base}/process`);
-    const res = await fetch(`${this.base}/process`, {
+    console.log(`[HearTh] POST /api/translate/process`);
+    const res = await fetch(`/api/translate/process`, {
       method: "POST",
       headers: { "X-HF-Token": storedToken() },
       body: form,
@@ -307,7 +344,7 @@ export class HearThTranslationService implements TranslationService {
       ? "Unknown"
       : LANG_CODE_TO_NAME[sttDetectedCode] ?? sttDetectedCode;
 
-    const res = await fetch(`${this.base}/detect-and-translate`, {
+    const res = await fetch(`/api/translate/detect`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -339,11 +376,11 @@ export class HearThTranslationService implements TranslationService {
     // auto-detect and returns the real language name (e.g. "Chinese").
     const resolvedLanguageName: string = data.detected_language;
 
-    // Code: trust Whisper in talk mode; in type mode we stay "und" for now
-    // because Aya doesn't reliably return ISO codes. The name is enough for
-    // the /translate direction.
+    // Code: trust Whisper in talk mode. In type mode Aya doesn't reliably
+    // return ISO codes, so reverse-lookup the code from the language name
+    // it does return; fall back to "und" only if that name is unrecognized.
     const resolvedCode: string = isUndetermined
-      ? sttDetectedCode // "und" — we don't have a better code
+      ? resolveLanguageCode(resolvedLanguageName) ?? sttDetectedCode
       : data.detected_language_code;
 
     // Only update session state if we got a real language name back
@@ -379,7 +416,7 @@ export class HearThTranslationService implements TranslationService {
       );
     }
 
-    const res = await fetch(`${this.base}/translate`, {
+    const res = await fetch(`/api/translate`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -490,16 +527,20 @@ export class HearThTranslationService implements TranslationService {
         v.lang.toLowerCase().startsWith(langCode)
       );
 
-      const match =
-        langVoices.find(isFemale) || langVoices[0] || voices.find(isFemale);
+      if (langVoices.length === 0) {
+        reject(new Error(`No TTS voice available for language: ${languageCode}`));
+        return;
+      }
 
-      console.log("[HearTh] selected voice:", match?.name, match?.lang);
+      const match = langVoices.find(isFemale) || langVoices[0];
+
+      console.log("[HearTh] selected voice:", match.name, match.lang);
       console.log(
         "[HearTh] lang voices:",
         langVoices.map((v) => v.name)
       );
 
-      if (match) utterance.voice = match;
+      utterance.voice = match;
 
       utterance.onend = () => resolve("");
       utterance.onerror = (e) => reject(new Error(`TTS error: ${e.error}`));

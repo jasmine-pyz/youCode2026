@@ -2,41 +2,80 @@
 
 import { useState, useRef, useEffect } from "react";
 import styles from "./SupportPanel.module.css";
-import { setResidentLanguageManual } from "@/lib/hearth-translation-service";
-
-function GlobeIcon() {
-  return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7a9cbd" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <circle cx="12" cy="12" r="10" />
-      <ellipse cx="12" cy="12" rx="4" ry="10" />
-      <line x1="2" y1="12" x2="22" y2="12" />
-    </svg>
-  );
-}
+import {
+  setResidentLanguageManual,
+  getResidentLanguageName,
+  getFlag,
+} from "@/lib/hearth-translation-service";
 
 const languages = [
-  { name: "Arabic",           flag: "🇸🇦", code: "ar"  },
-  { name: "Dutch",            flag: "🇳🇱", code: "nl"  },
-  { name: "English",          flag: "🇬🇧", code: "en"  },
-  { name: "French",           flag: "🇫🇷", code: "fr"  },
-  { name: "German",           flag: "🇩🇪", code: "de"  },
-  { name: "Greek",            flag: "🇬🇷", code: "el"  },
-  { name: "Hindi",            flag: "🇮🇳", code: "hi"  },
-  { name: "Indonesian",       flag: "🇮🇩", code: "id"  },
-  { name: "Italian",          flag: "🇮🇹", code: "it"  },
-  { name: "Japanese",         flag: "🇯🇵", code: "ja"  },
-  { name: "Korean",           flag: "🇰🇷", code: "ko"  },
-  { name: "Malay",            flag: "🇲🇾", code: "ms"  },
-  { name: "Mandarin Chinese", flag: "🇨🇳", code: "zh"  },
-  { name: "Polish",           flag: "🇵🇱", code: "pl"  },
-  { name: "Portuguese",       flag: "🇵🇹", code: "pt"  },
-  { name: "Punjabi",          flag: "🇮🇳", code: "pa"  },
-  { name: "Russian",          flag: "🇷🇺", code: "ru"  },
-  { name: "Spanish",          flag: "🇪🇸", code: "es"  },
-  { name: "Thai",             flag: "🇹🇭", code: "th"  },
-  { name: "Turkish",          flag: "🇹🇷", code: "tr"  },
-  { name: "Ukrainian",        flag: "🇺🇦", code: "uk"  },
-  { name: "Vietnamese",       flag: "🇻🇳", code: "vi"  },
+  { name: "Amharic",    code: "am" },
+  { name: "Arabic",     code: "ar" },
+  { name: "Basque",     code: "eu" },
+  { name: "Bengali",    code: "bn" },
+  { name: "Bulgarian",  code: "bg" },
+  { name: "Burmese",    code: "my" },
+  { name: "Catalan",    code: "ca" },
+  { name: "Chinese",    code: "zh" },
+  { name: "Croatian",   code: "hr" },
+  { name: "Czech",      code: "cs" },
+  { name: "Danish",     code: "da" },
+  { name: "Dutch",      code: "nl" },
+  { name: "English",    code: "en" },
+  { name: "Estonian",   code: "et" },
+  { name: "Finnish",    code: "fi" },
+  { name: "French",     code: "fr" },
+  { name: "Galician",   code: "gl" },
+  { name: "German",     code: "de" },
+  { name: "Greek",      code: "el" },
+  { name: "Gujarati",   code: "gu" },
+  { name: "Hausa",      code: "ha" },
+  { name: "Hebrew",     code: "he" },
+  { name: "Hindi",      code: "hi" },
+  { name: "Hungarian",  code: "hu" },
+  { name: "Igbo",       code: "ig" },
+  { name: "Indonesian", code: "id" },
+  { name: "Irish",      code: "ga" },
+  { name: "Italian",    code: "it" },
+  { name: "Japanese",   code: "ja" },
+  { name: "Javanese",   code: "jv" },
+  { name: "Khmer",      code: "km" },
+  { name: "Korean",     code: "ko" },
+  { name: "Lao",        code: "lo" },
+  { name: "Latvian",    code: "lv" },
+  { name: "Lithuanian", code: "lt" },
+  { name: "Malagasy",   code: "mg" },
+  { name: "Malay",      code: "ms" },
+  { name: "Maltese",    code: "mt" },
+  { name: "Marathi",    code: "mr" },
+  { name: "Nepali",     code: "ne" },
+  { name: "Norwegian",  code: "no" },
+  { name: "Persian",    code: "fa" },
+  { name: "Polish",     code: "pl" },
+  { name: "Portuguese", code: "pt" },
+  { name: "Punjabi",    code: "pa" },
+  { name: "Romanian",   code: "ro" },
+  { name: "Russian",    code: "ru" },
+  { name: "Serbian",    code: "sr" },
+  { name: "Shona",      code: "sn" },
+  { name: "Slovak",     code: "sk" },
+  { name: "Slovenian",  code: "sl" },
+  { name: "Spanish",    code: "es" },
+  { name: "Swahili",    code: "sw" },
+  { name: "Swedish",    code: "sv" },
+  { name: "Tagalog",    code: "tl" },
+  { name: "Tamil",      code: "ta" },
+  { name: "Telugu",     code: "te" },
+  { name: "Thai",       code: "th" },
+  { name: "Turkish",    code: "tr" },
+  { name: "Ukrainian",  code: "uk" },
+  { name: "Urdu",       code: "ur" },
+  { name: "Vietnamese", code: "vi" },
+  { name: "Welsh",      code: "cy" },
+  { name: "Wolof",      code: "wo" },
+  { name: "Xhosa",      code: "xh" },
+  { name: "Yoruba",     code: "yo" },
+  { name: "Zulu",       code: "zu" },
 ];
 
 function ChatIcon() {
@@ -219,7 +258,7 @@ interface SupportPanelProps {
 
 export function SupportPanel({ onSelect }: SupportPanelProps) {
   const [selected, setSelected] = useState<Category | null>(null);
-  const [language, setLanguage] = useState("");
+  const [language, setLanguage] = useState(() => getResidentLanguageName() ?? "");
   const [langError, setLangError] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -236,11 +275,20 @@ export function SupportPanel({ onSelect }: SupportPanelProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Stay in sync with the persisted resident language (e.g. cleared via "New session")
+  // even while this panel stays mounted across tab switches.
+  useEffect(() => {
+    const id = setInterval(() => {
+      setLanguage(getResidentLanguageName() ?? "");
+    }, 500);
+    return () => clearInterval(id);
+  }, []);
+
   function handleLanguageSelect(lang: typeof languages[0]) {
     setLanguage(lang.name);
     setLangError(false);
     setDropdownOpen(false);
-    setResidentLanguageManual(lang.name, lang.code, lang.flag);
+    setResidentLanguageManual(lang.name, lang.code, getFlag(lang.code));
   }
 
   function handlePromptClick(item: string) {
@@ -267,8 +315,7 @@ export function SupportPanel({ onSelect }: SupportPanelProps) {
           aria-haspopup="listbox"
           aria-expanded={dropdownOpen}
         >
-          {!selectedLang && <GlobeIcon />}
-          <span>{selectedLang ? <>{selectedLang.flag}&nbsp;&nbsp;{selectedLang.name}</> : "Language"}</span>
+          <span>{selectedLang ? selectedLang.name : "Language"}</span>
         </button>
 
         {dropdownOpen && (
@@ -281,7 +328,7 @@ export function SupportPanel({ onSelect }: SupportPanelProps) {
                 className={`${styles.langOption} ${l.name === language ? styles.langOptionActive : ""}`}
                 onClick={() => handleLanguageSelect(l)}
               >
-                {l.flag}&nbsp;&nbsp;{l.name}
+                {l.name}
               </li>
             ))}
           </ul>

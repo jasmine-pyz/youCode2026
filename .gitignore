@@ -1,17 +1,8 @@
-.env
-
-# Virtual environment
-bridge-env/
-youCodeVenv/
-
-venv/
-.env/
-.envrc
+# Virtual environments
 .venv/
 
-# Model cache (huge — don't commit)
-~/.cache/huggingface/
-.cache/
+# Environment variables
+.env*
 
 # Audio temp files
 *.webm
@@ -19,35 +10,17 @@ venv/
 *.mp3
 *.m4a
 
-# Python
+# Cache and compiled files
+.cache/
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-
-# Environment variables (API keys etc)
-.env
-*.env
-
-# Mac
-.DS_Store
-
-# Editor
-.vscode/
-.idea/
+*.py[cod]
 
 # Logs
 *.log
-uvicorn.log
 
-__pycache__/
-*.py[cod]
-*.pyo
-*.pyd
-*.so
-*.egg
-*.egg-info/
-dist/
-build/
-.eggs/
+# IDE and editor files
+.vscode/
+.idea/
+
+# Operating system files
+.DS_Store

@@ -5,6 +5,7 @@ import {
   setRegionKey,
   getRegionKey,
   getResidentLanguage,
+  getResidentLanguageName,
   clearSession,
   REGION_LABELS,
   REGION_DESCRIPTIONS,
@@ -20,12 +21,13 @@ interface RegionPickerProps {
 export function RegionPicker({ onClearSession }: RegionPickerProps) {
   const [region, setRegion] = useState<RegionKey>(getRegionKey());
   const [residentLang, setResidentLang] = useState(getResidentLanguage());
+  const [residentLangName, setResidentLangName] = useState(getResidentLanguageName());
 
   // Poll for resident language — updates after first resident message
   useEffect(() => {
     const id = setInterval(() => {
-      const lang = getResidentLanguage();
-      setResidentLang(lang);
+      setResidentLang(getResidentLanguage());
+      setResidentLangName(getResidentLanguageName());
     }, 500);
     return () => clearInterval(id);
   }, []);
@@ -38,6 +40,7 @@ export function RegionPicker({ onClearSession }: RegionPickerProps) {
   function handleClear() {
     clearSession();
     setResidentLang(null);
+    setResidentLangName(null);
     onClearSession();
   }
 
@@ -45,12 +48,14 @@ export function RegionPicker({ onClearSession }: RegionPickerProps) {
     <div className={styles.bar}>
       {/* Region model buttons */}
       <div className={styles.regionGroup}>
-        {(Object.keys(REGION_LABELS) as RegionKey[]).map((key) => (
+        {(Object.keys(REGION_LABELS) as RegionKey[]).map((key, index) => (
           <button
             key={key}
-            className={`${styles.regionBtn} ${region === key ? styles.active : ""}`}
+            className={`${styles.regionBtn} ${region === key ? styles.active : ""} ${
+              index === 0 ? "tooltipStart" : ""
+            }`}
             onClick={() => handleRegion(key)}
-            title={REGION_DESCRIPTIONS[key]}
+            data-tooltip={REGION_DESCRIPTIONS[key]}
           >
             {REGION_LABELS[key]}
           </button>
@@ -62,8 +67,17 @@ export function RegionPicker({ onClearSession }: RegionPickerProps) {
         {residentLang ? (
           <>
             <span className={styles.langFlag}>{residentLang.flag}</span>
-            <span className={styles.langCode}>{residentLang.code.toUpperCase()}</span>
-            <button className={styles.clearBtn} onClick={handleClear} title="New session">
+            <span
+              className={styles.langCode}
+              data-tooltip={residentLangName ?? undefined}
+            >
+              {residentLang.code.toUpperCase()}
+            </span>
+            <button
+              className={`${styles.clearBtn} tooltipEnd`}
+              onClick={handleClear}
+              data-tooltip="New session"
+            >
               ✕
             </button>
           </>

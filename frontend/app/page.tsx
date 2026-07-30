@@ -1,12 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { clearSession } from "@/lib/hearth-translation-service";
 import styles from "./page.module.css";
 
 export default function LandingPage() {
   const router = useRouter();
   const [leaving, setLeaving] = useState(false);
+
+  // Arriving at the landing page always means a fresh start — clear any
+  // resident language left over from a previous session (client-side
+  // navigation doesn't reload the JS module state on its own).
+  useEffect(() => {
+    clearSession();
+  }, []);
 
   function handleStart() {
     setLeaving(true);

@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Hide the Next.js dev-mode indicator badge
+  devIndicators: false,
+
   // Enable static export if you want to deploy as a pure static PWA
   // (no server-side API routes — you'd call an external backend instead)
   // output: "export",

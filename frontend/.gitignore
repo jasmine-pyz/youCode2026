@@ -1,42 +1,32 @@
-# dependencies
+# Dependencies
 node_modules/
 
-# next.js
+# Environment variables
+.env*
+
+# Build and generated files
 .next/
 out/
-
-# build
 dist/
 build/
+next-env.d.ts
+ios/
+android/
 
-# env
-.env
-.env.local
-.env.production
-.env.development
+# Cache and compiled files
+*.tsbuildinfo
 
-# debug
+# Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# typescript
-*.tsbuildinfo
-next-env.d.ts
-
-# os
-.DS_Store
-Thumbs.db
-
-# ide
+# IDE and editor files
 .vscode/
 .idea/
 *.swp
 *.swo
 
-# capacitor (app store builds)
-ios/
-android/
-
-# generated icons (keep SVG source, generate PNGs in CI)
-public/icons/*.png
+# Operating system files
+.DS_Store
+Thumbs.db

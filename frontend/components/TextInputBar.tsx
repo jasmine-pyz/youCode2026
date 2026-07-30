@@ -31,10 +31,11 @@ function SendIcon() {
 interface TextInputBarProps {
   speaker: Speaker;
   onSubmit: (text: string, speaker: Speaker) => Promise<void>;
-  isDisabled?: boolean;
+  isDisabled: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function TextInputBar({ speaker, onSubmit, isDisabled }: TextInputBarProps) {
+export function TextInputBar({ speaker, onSubmit, isDisabled, onOpenChange }: TextInputBarProps) {
   const [text, setText] = useState("");
   const [open, setOpen] = useState(false);
   const taRef = useRef<HTMLTextAreaElement>(null);
@@ -43,7 +44,8 @@ export function TextInputBar({ speaker, onSubmit, isDisabled }: TextInputBarProp
 
   useEffect(() => {
     if (open) taRef.current?.focus();
-  }, [open]);
+    onOpenChange?.(open);
+  }, [open, onOpenChange]);
 
   const handleSubmit = useCallback(async () => {
     const value = text.trim();
@@ -73,9 +75,10 @@ export function TextInputBar({ speaker, onSubmit, isDisabled }: TextInputBarProp
   return (
     <div className={styles.bar}>
       <button
-        className={`${styles.toggle} ${open ? styles.toggleOpen : ""}`}
+        className={`${styles.toggle} ${open ? styles.toggleOpen : ""} tooltipStart`}
         onClick={() => setOpen((o) => !o)}
         aria-label={open ? "Hide text input" : "Show text input"}
+        data-tooltip={open ? "Hide text input" : "Show text input"}
         aria-expanded={open}
       >
         {open ? <ChevronDownIcon /> : <KeyboardIcon />}
