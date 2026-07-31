@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 def send_sms_alert(original_text: str, english_translation: str) -> None:
-    """Send an SMS alert about detected aggressive content.
+    """Send an SMS alert about detected aggressive content
 
     Required env vars (set in backend/.env, loaded by main.py at startup):
         TWILIO_ACCOUNT_SID  — Twilio account SID

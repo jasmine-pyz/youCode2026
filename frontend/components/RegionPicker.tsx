@@ -18,6 +18,7 @@ interface RegionPickerProps {
   onClearSession: () => void;
 }
 
+// Region-model selector and resident-language session status bar
 export function RegionPicker({ onClearSession }: RegionPickerProps) {
   const [region, setRegion] = useState<RegionKey>(getRegionKey());
   const [residentLang, setResidentLang] = useState(getResidentLanguage());
@@ -32,11 +33,13 @@ export function RegionPicker({ onClearSession }: RegionPickerProps) {
     return () => clearInterval(id);
   }, []);
 
+  // Switch the active translation region model
   function handleRegion(key: RegionKey) {
     setRegionKey(key);
     setRegion(key);
   }
 
+  // Clear the resident language and start a fresh session
   function handleClear() {
     clearSession();
     setResidentLang(null);

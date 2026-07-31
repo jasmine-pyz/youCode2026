@@ -10,6 +10,7 @@ interface TranscriptOverlayProps {
   onClose: () => void;
 }
 
+// Overlay that switches between the transcript list and a selected transcript's viewer
 export default function TranscriptOverlay({ transcripts, onDelete, onClose }: TranscriptOverlayProps) {
   const [activeTranscriptId, setActiveTranscriptId] = useState<string | null>(null);
 

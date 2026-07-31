@@ -65,7 +65,7 @@ AGGRESSIVE_PATTERNS: list[str] = [
 ]
 
 # Pre-compile a single regex with all patterns joined by OR,
-# wrapped in word boundaries for accurate matching.
+# wrapped in word boundaries for accurate matching
 _AGGRESSIVE_RE = re.compile(
     r"\b(?:" + "|".join(re.escape(p) for p in AGGRESSIVE_PATTERNS) + r")\b",
     re.IGNORECASE,
@@ -73,5 +73,5 @@ _AGGRESSIVE_RE = re.compile(
 
 
 def check_aggression(text: str) -> bool:
-    """Return True if the text contains aggressive or threatening language."""
+    """Return True if the text contains aggressive or threatening language"""
     return bool(_AGGRESSIVE_RE.search(text))

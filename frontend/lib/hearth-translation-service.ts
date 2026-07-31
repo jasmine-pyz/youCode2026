@@ -39,11 +39,13 @@ const LANGUAGE_FLAGS: Record<string, string> = {
   ti: "🇪🇷",
 };
 
+// Look up a flag emoji for a language code, falling back to a neutral globe
 export function getFlag(langCode: string): string {
   const base = langCode.split("-")[0].toLowerCase();
   return LANGUAGE_FLAGS[langCode] || LANGUAGE_FLAGS[base] || "🌐";
 }
 
+// Build a DetectedLanguage object from a raw language code
 function makeDetectedLanguage(
   code: string,
   confidence: number = 0.9
@@ -152,7 +154,7 @@ const NAME_TO_LANG_CODE: Record<string, string> = Object.fromEntries(
 
 // Aya's detected language name doesn't always match our map exactly
 // (e.g. "Mandarin Chinese" vs "Chinese"), so fall back to a substring
-// match in either direction before giving up.
+// match in either direction before giving up
 function resolveLanguageCode(name: string | undefined): string | undefined {
   if (!name) return undefined;
   const normalized = name.toLowerCase().trim();
@@ -171,23 +173,29 @@ let _residentLanguage: DetectedLanguage | null = null;
 let _residentLanguageName: string | null = null;
 let _regionKey: RegionKey = "global";
 
+// Get the currently detected/selected resident language, if any
 export function getResidentLanguage(): DetectedLanguage | null {
   return _residentLanguage;
 }
+// Get the resident language's display name, if any
 export function getResidentLanguageName(): string | null {
   return _residentLanguageName;
 }
+// Set which Tiny Aya region model to translate with
 export function setRegionKey(key: RegionKey): void {
   _regionKey = key;
 }
+// Get the currently selected region model key
 export function getRegionKey(): RegionKey {
   return _regionKey;
 }
+// Clear the resident language, resetting the conversation session
 export function clearSession(): void {
   _residentLanguage = null;
   _residentLanguageName = null;
 }
 
+// Manually set the resident language (e.g. from the Support page picker)
 export function setResidentLanguageManual(name: string, code: string, flag: string): void {
   _residentLanguage = {
     code,

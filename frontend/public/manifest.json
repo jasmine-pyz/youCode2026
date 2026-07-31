@@ -2,7 +2,7 @@
   "name": "Hearth",
   "short_name": "Hearth",
   "description": "Real-time translation for shelter staff and residents. Speak any language, face to face.",
-  "start_url": "/app",
+  "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#FFFDF8",

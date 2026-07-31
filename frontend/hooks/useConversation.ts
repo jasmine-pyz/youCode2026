@@ -10,6 +10,7 @@ import type {
 } from "@/types";
 import { getFlag } from "@/lib/hearth-translation-service";
 
+// Build a DetectedLanguage object from a raw language code
 function makeDetectedLanguage(code: string, confidence = 0.9) {
   const normalized = code.split("-")[0].toLowerCase();
   return { code: normalized, flag: getFlag(normalized), confidence };
@@ -33,6 +34,7 @@ interface UseConversationReturn {
   dismissError: () => void;
 }
 
+// Manage the full conversation: recording, translation, playback, and history
 export function useConversation(
   service: TranslationService
 ): UseConversationReturn {
@@ -45,10 +47,11 @@ export function useConversation(
   const recordingHandleRef = useRef<any>(null);
 
   // Keep a ref in sync with recordingState so callbacks always see
-  // the latest value without needing it in their dependency arrays.
+  // the latest value without needing it in their dependency arrays
   const recordingStateRef = useRef(recordingState);
   recordingStateRef.current = recordingState;
 
+  // Start capturing microphone audio for the given speaker
   const startRecording = useCallback(
     async (speaker: Speaker) => {
       if (recordingStateRef.current.status !== "idle") return;
@@ -68,6 +71,7 @@ export function useConversation(
     [service]
   );
 
+  // Stop recording, transcribe, translate, and append the resulting message
   const stopRecording = useCallback(
     async (speaker: Speaker) => {
       const currentState = recordingStateRef.current;
@@ -96,7 +100,7 @@ export function useConversation(
         // 2. Translate the transcript
         const translateResult = await service.translate({
           text: recordingResult.transcript,
-          speaker, // ← add this
+          speaker,
           sourceLanguage: recordingResult.detectedLanguage.code,
         });
 
@@ -123,6 +127,7 @@ export function useConversation(
     [service]
   );
 
+  // Translate typed text (as opposed to spoken/recorded audio)
   const submitText = useCallback(
     async (text: string, speaker: Speaker) => {
       if (!text.trim() || recordingStateRef.current.status !== "idle") return;
@@ -131,8 +136,8 @@ export function useConversation(
       setRecordingState({ status: "processing", speaker });
 
       try {
-        // top = resident side → pass non-"en" so service routes to _residentTranslate
-        // bottom = worker side → pass "en" so service routes to _workerTranslate
+        // Top = resident side → pass non-"en" so service routes to _residentTranslate
+        // Bottom = worker side → pass "en" so service routes to _workerTranslate
         const sourceLanguage = speaker === "bottom" ? "en" : "und"; // "und" = undetermined
 
         const translateResult = await service.translate({
@@ -170,6 +175,7 @@ export function useConversation(
     [service]
   );
 
+  // Play a message's audio aloud via TTS, in the appropriate language for the viewer
   const playMessage = useCallback(
     async (messageId: string, viewer: Speaker) => {
       const msg = messages.find((m) => m.id === messageId);
@@ -191,6 +197,7 @@ export function useConversation(
     [messages, playingId, service]
   );
 
+  // Send a pre-written English message (e.g. a Support panel prompt), optionally auto-playing it
   const sendMessage = useCallback(
     async (text: string, speaker: Speaker, autoPlay = false) => {
       if (recordingStateRef.current.status !== "idle") return;
@@ -232,12 +239,14 @@ export function useConversation(
     [service]
   );
 
+  // Reset the conversation back to an empty, idle state
   const clearConversation = useCallback(() => {
     setMessages([]);
     setRecordingState({ status: "idle" });
     setPlayingId(null);
   }, []);
 
+  // Clear the current error message
   const dismissError = useCallback(() => setError(null), []);
 
   return {

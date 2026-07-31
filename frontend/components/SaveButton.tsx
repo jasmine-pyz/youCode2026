@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import styles from "./SaveButton.module.css";
 
+// Floppy disk save icon
 function SaveIcon() {
   return (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
@@ -25,10 +26,12 @@ type ToastState =
   | { type: "error"; message: string }
   | null;
 
+// Button to save the current conversation as a transcript, with a result toast
 export function SaveButton({ onSave, onClear }: SaveButtonProps) {
   const [toast, setToast] = useState<ToastState>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Cancel any pending auto-dismiss timer for the toast
   const clearTimer = () => {
     if (timerRef.current) {
       clearTimeout(timerRef.current);
@@ -40,12 +43,14 @@ export function SaveButton({ onSave, onClear }: SaveButtonProps) {
     return () => clearTimer();
   }, []);
 
+  // Show a toast message, auto-dismissing it after a few seconds
   const showToast = (t: ToastState) => {
     clearTimer();
     setToast(t);
     timerRef.current = setTimeout(() => setToast(null), 3000);
   };
 
+  // Attempt to save the transcript and show a success or error toast
   const handleClick = () => {
     const result = onSave();
     if (result.ok) {
@@ -60,6 +65,7 @@ export function SaveButton({ onSave, onClear }: SaveButtonProps) {
     }
   };
 
+  // Dismiss the toast and clear the conversation to start a new one
   const handleClear = () => {
     clearTimer();
     setToast(null);

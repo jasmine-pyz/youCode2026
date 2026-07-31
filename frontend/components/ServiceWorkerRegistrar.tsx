@@ -17,7 +17,7 @@ export function ServiceWorkerRegistrar() {
           // Check for updates periodically
           setInterval(() => {
             registration.update();
-          }, 60 * 60 * 1000); // every hour
+          }, 60 * 60 * 1000); // Every hour
         })
         .catch((error) => {
           console.warn("SW registration failed:", error);

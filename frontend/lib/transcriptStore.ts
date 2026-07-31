@@ -4,6 +4,7 @@ const STORAGE_KEY = "hearth_transcripts";
 
 // ─── Typed error classes ───
 
+// Thrown when the storage quota has been exceeded
 export class StorageFullError extends Error {
   constructor() {
     super("Storage quota exceeded");
@@ -11,6 +12,7 @@ export class StorageFullError extends Error {
   }
 }
 
+// Thrown when storage can't be read or written at all
 export class StorageUnavailableError extends Error {
   constructor(cause?: unknown) {
     super("Storage is unavailable");
@@ -21,6 +23,7 @@ export class StorageUnavailableError extends Error {
 
 // ─── Pure functions (accept injected storage) ───
 
+// Get all saved transcripts, most recently saved first
 export function getAll(storage: Storage): SavedTranscript[] {
   try {
     const raw = storage.getItem(STORAGE_KEY);
@@ -32,6 +35,7 @@ export function getAll(storage: Storage): SavedTranscript[] {
   }
 }
 
+// Save a new transcript, throwing if storage is full or unavailable
 export function add(storage: Storage, transcript: SavedTranscript): void {
   try {
     const current = getAll(storage);
@@ -49,6 +53,7 @@ export function add(storage: Storage, transcript: SavedTranscript): void {
   }
 }
 
+// Delete a saved transcript by id
 export function remove(storage: Storage, id: string): void {
   try {
     const current = getAll(storage);
@@ -59,6 +64,7 @@ export function remove(storage: Storage, id: string): void {
   }
 }
 
+// Delete all saved transcripts
 export function clear(storage: Storage): void {
   storage.removeItem(STORAGE_KEY);
 }
@@ -72,6 +78,7 @@ export interface TranscriptStore {
   clear(): void;
 }
 
+// Build a TranscriptStore bound to a specific storage instance
 export function makeStore(storage: Storage): TranscriptStore {
   return {
     getAll: () => getAll(storage),

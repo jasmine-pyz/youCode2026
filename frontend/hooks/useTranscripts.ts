@@ -16,6 +16,7 @@ export interface UseTranscriptsReturn {
   dismissStorageError: () => void;
 }
 
+// Build a titled, timestamped transcript record from a list of messages
 function makeTranscript(messages: TranslationResult[]): SavedTranscript {
   const now = new Date();
   const weekday = now.toLocaleDateString("en-GB", { weekday: "short" });
@@ -34,16 +35,19 @@ function makeTranscript(messages: TranslationResult[]): SavedTranscript {
 
 let _store: ReturnType<typeof makeStore> | null = null;
 
+// Lazily create the localStorage-backed transcript store (client-side only)
 function getStore() {
   if (typeof window === "undefined") return null;
   if (!_store) _store = makeStore(window.localStorage);
   return _store;
 }
 
+// Manage saved transcripts: loading, saving, and deleting them from local storage
 export function useTranscripts(): UseTranscriptsReturn {
   const [transcripts, setTranscripts] = useState<SavedTranscript[]>([]);
   const [storageError, setStorageError] = useState<string | null>(null);
 
+  // Load any previously saved transcripts on mount
   useEffect(() => {
     const store = getStore();
     if (!store) return;
@@ -54,6 +58,7 @@ export function useTranscripts(): UseTranscriptsReturn {
     }
   }, []);
 
+  // Save the current conversation as a new transcript
   const saveTranscript = useCallback(
     (messages: TranslationResult[]): SaveResult => {
       if (messages.length === 0) return { ok: false, reason: "empty" };
@@ -73,6 +78,7 @@ export function useTranscripts(): UseTranscriptsReturn {
     []
   );
 
+  // Delete a saved transcript by id
   const deleteTranscript = useCallback((id: string) => {
     const store = getStore();
     if (!store) return;
@@ -86,6 +92,7 @@ export function useTranscripts(): UseTranscriptsReturn {
     }
   }, []);
 
+  // Clear the current storage error message
   const dismissStorageError = useCallback(() => setStorageError(null), []);
 
   return { transcripts, saveTranscript, deleteTranscript, storageError, dismissStorageError };

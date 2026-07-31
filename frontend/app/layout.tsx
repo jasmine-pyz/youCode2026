@@ -26,6 +26,7 @@ export const viewport: Viewport = {
   themeColor: "#FFFDF8",
 };
 
+// Root HTML shell shared by every page
 export default function RootLayout({
   children,
 }: {

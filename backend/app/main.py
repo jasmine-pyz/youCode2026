@@ -56,8 +56,8 @@ print("[HearTh] Whisper ready.")
 class DetectAndTranslateRequest(BaseModel):
     text: str
     model_key: str = "global"
-    detected_language_code: str = "und"  # from Whisper, or "und" for text input
-    detected_language_name: str = "Unknown"  # from Whisper, or "Unknown" for text input
+    detected_language_code: str = "und"  # From Whisper, or "und" for text input
+    detected_language_name: str = "Unknown"  # From Whisper, or "Unknown" for text input
 
 
 class TranslateRequest(BaseModel):
@@ -70,6 +70,7 @@ class TranslateRequest(BaseModel):
 
 
 def get_token(request: Request) -> str:
+    """Read the HF token from the request header, falling back to the server env var"""
     token = request.headers.get("X-HF-Token") or os.environ.get("HF_TOKEN", "")
     if not token:
         raise HTTPException(
@@ -151,12 +152,13 @@ def _detect_and_translate(client: InferenceClient, text: str) -> tuple[str, str]
 
 @app.get("/health")
 def health():
+    """Report service status and which translation models are available"""
     return {"status": "ok", "whisper": "ready", "models": list(MODELS.keys())}
 
 
 @app.post("/process")
 async def process(audio: UploadFile = File(...)):
-    """Whisper STT → transcript + detected language code."""
+    """Whisper STT → transcript + detected language code"""
     suffix = pathlib.Path(audio.filename or "audio.webm").suffix or ".webm"
     with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
         tmp.write(await audio.read())
@@ -189,7 +191,7 @@ def detect_and_translate(req: DetectAndTranslateRequest, request: Request):
                → just translate, echo back the Whisper-detected language.
 
     Type mode: language unknown (detected_language_code == "und")
-               → ask Aya to detect + translate, return the detected language name.
+               → ask Aya to detect and translate, return the detected language name.
     """
     token = get_token(request)
     if not token:
@@ -212,7 +214,7 @@ def detect_and_translate(req: DetectAndTranslateRequest, request: Request):
             )
             detected_language_code = (
                 req.detected_language_code
-            )  # still "und"; frontend can update
+            )  # Still "und"; frontend can update
         else:
             # ── Talk mode: Whisper already detected the language ──────────────
             translation = _translate(client, req.text, "English")
@@ -234,7 +236,7 @@ def detect_and_translate(req: DetectAndTranslateRequest, request: Request):
             f"[HearTh] translation: {translation!r}, lang: {detected_language_name!r}"
         )
         return {
-            "detected_language": detected_language_name,  # ← now always a real name
+            "detected_language": detected_language_name,  # ← Now always a real name
             "detected_language_code": detected_language_code,
             "translation": translation,
         }
@@ -246,7 +248,7 @@ def detect_and_translate(req: DetectAndTranslateRequest, request: Request):
 
 @app.post("/translate")
 def translate(req: TranslateRequest, request: Request):
-    """Worker (English) → resident's language."""
+    """Worker (English) → resident's language"""
     token = get_token(request)
     print(f"[HearTh] /translate — target={req.target_lang!r}, text={req.text!r}")
 

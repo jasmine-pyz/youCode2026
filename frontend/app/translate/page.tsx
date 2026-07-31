@@ -14,6 +14,7 @@ import {
 import { getHearThService } from "@/lib/hearth-translation-service";
 import styles from "./page.module.css";
 
+// Icon for the "view saved transcripts" button
 function TranscriptIcon() {
   return (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
@@ -22,6 +23,7 @@ function TranscriptIcon() {
   );
 }
 
+// Main translation screen: talk/support tabs, conversation threads, and transcripts
 export default function AppPage() {
   const hearthServiceRef = useRef<ReturnType<typeof getHearThService> | null>(
     null
@@ -60,11 +62,13 @@ export default function AppPage() {
   const recordingSpeaker =
     recordingState.status !== "idle" ? recordingState.speaker : null;
 
+  // Send a tapped support prompt as a worker message and switch to the talk tab
   function handlePromptSelect(text: string) {
     sendMessage(text, "bottom", false);
     setActiveTab("talk");
   }
 
+  // Clear the conversation when the region picker starts a new session
   function handleClearSession() {
     clearConversation();
   }

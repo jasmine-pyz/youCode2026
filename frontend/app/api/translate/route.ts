@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// Proxy POST /api/translate → FastAPI /translate
 const BACKEND = process.env.BACKEND_URL ?? "http://localhost:8000";
 
+// Proxy POST /api/translate → FastAPI /translate
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();

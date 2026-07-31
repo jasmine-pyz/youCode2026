@@ -33,6 +33,7 @@ const LANGUAGE_NAMES: Record<string, string> = {
   ti: "ትግርኛ",
 };
 
+// Look up a language's display name from its code, in its own script where possible
 function getLanguageName(code: string): string {
   const base = code.split("-")[0].toLowerCase();
   if (base === "und") return "Undefined";
@@ -48,6 +49,7 @@ interface ConversationThreadProps {
   onPlay: (id: string, viewer: Speaker) => void;
 }
 
+// Show the latest conversation message, with its language badge and playback button
 export function ConversationThread({
   messages,
   viewer,
@@ -61,6 +63,7 @@ export function ConversationThread({
   const [wrapped, setWrapped] = useState(false);
 
   useEffect(() => {
+    // Detect whether the play button has wrapped onto its own line
     function check() {
       if (!textRef.current || !btnRef.current) return;
       const textBottom = textRef.current.getBoundingClientRect().bottom;

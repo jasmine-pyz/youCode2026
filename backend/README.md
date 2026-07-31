@@ -1,37 +1,48 @@
-## Backend
+# Hearth Backend
 
-The FastAPI backend lives in [backend/](backend/).
+## Requirements
+- Python 3.9 or later
+- ffmpeg (required by Whisper for audio processing)
+- See `requirements.txt` for full dependencies.
 
-Use [backend/backend.sh](backend/backend.sh) to set up the backend environment, install dependencies, and load backend/.env before running uvicorn.
+## Setup
 
-## Manual setup
+Alternatively, run [`backend.sh`](backend.sh) to automate steps 2–4 below: it creates and activates the virtual environment, installs dependencies, and loads `.env` before starting the server.
 
-If `backend.sh` does not work, do it manually:
+**1. Clone the Repository**
 
-**1. Set up environment variables**
-
-Create `backend/.env` and add your Hugging Face token.
+This downloads a copy of the project to your computer and moves you into the backend folder.
 ```bash
-HF_TOKEN=your_huggingface_token_here
+git clone https://github.com/steph-xue/hearth.git
+cd hearth/backend
 ```
 
-**2. Set up the backend environment**
+**2. Create and Activate a Python Virtual Environment**
 
-Create and activate a Python virtual environment.
+This keeps the project's dependencies separate from other Python projects on your machine.
 ```bash
-cd backend
-python3 -m venv .venv
-source .venv/bin/activate
+python3 -m venv .venv       # On Windows use: python -m venv .venv
+source .venv/bin/activate   # On Windows use: .venv\Scripts\activate
 ```
 
-**3. Install dependencies**
+**3. Install the Dependencies**
 
+This installs all dependencies the backend needs to run.
 ```bash
 pip install -r requirements.txt
 ```
 
-**4. Start the backend**
+**4. Set Up Environment Variables**
 
+Create a `.env` file in the backend folder with your Hugging Face token.
+```bash
+HF_TOKEN=your_huggingface_token_here  # Hugging Face token
+```
+
+**5. Start the Development Server**
+
+This runs the FastAPI backend development server using Uvicorn.
 ```bash
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
+The server will be available at `http://127.0.0.1:8000`.

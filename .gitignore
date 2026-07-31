@@ -1,8 +1,30 @@
+# Dependencies
+node_modules/
+
 # Virtual environments
 .venv/
 
 # Environment variables
 .env*
+
+# Database files
+*.sqlite3
+*.db
+
+# Build and generated files
+.next/
+out/
+next-env.d.ts
+
+# Test and coverage files
+coverage/
+.pytest_cache/
+
+# Cache and compiled files
+.cache/
+__pycache__/
+*.py[cod]
+*.tsbuildinfo
 
 # Audio temp files
 *.webm
@@ -10,17 +32,16 @@
 *.mp3
 *.m4a
 
-# Cache and compiled files
-.cache/
-__pycache__/
-*.py[cod]
-
 # Logs
 *.log
+npm-debug.log*
 
 # IDE and editor files
 .vscode/
 .idea/
+*.swp
+*.swo
 
 # Operating system files
 .DS_Store
+Thumbs.db

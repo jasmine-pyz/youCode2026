@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 
-// Generates animated waveform bar heights for the recording visualization.
+// Generate animated waveform bar heights for the recording visualization
 export function useWaveform(active: boolean, barCount: number = 12) {
   const [bars, setBars] = useState<number[]>(Array(barCount).fill(4));
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);

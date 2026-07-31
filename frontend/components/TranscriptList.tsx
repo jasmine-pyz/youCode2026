@@ -7,6 +7,7 @@ interface TranscriptListProps {
   onDelete: (id: string) => void;
 }
 
+// Format a saved-at timestamp as e.g. "Mon 5 Jan, 14:30"
 function formatDate(ms: number): string {
   const d = new Date(ms);
   const day = d.toLocaleDateString("en-GB", { weekday: "short" });
@@ -16,6 +17,7 @@ function formatDate(ms: number): string {
   return `${day} ${date} ${month}, ${time}`;
 }
 
+// List of saved transcripts, with select and delete actions
 export default function TranscriptList({ transcripts, onSelect, onDelete }: TranscriptListProps) {
   if (transcripts.length === 0) {
     return (

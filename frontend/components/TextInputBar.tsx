@@ -4,6 +4,7 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import type { Speaker } from "@/types";
 import styles from "./TextInputBar.module.css";
 
+// Toggle icon shown when the text input is collapsed
 function KeyboardIcon() {
   return (
     <svg width="45" height="45" viewBox="0 0 40 40" fill="currentColor" aria-hidden>
@@ -12,6 +13,7 @@ function KeyboardIcon() {
   );
 }
 
+// Toggle icon shown when the text input is expanded
 function ChevronDownIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
@@ -20,6 +22,7 @@ function ChevronDownIcon() {
   );
 }
 
+// Send button icon
 function SendIcon() {
   return (
     <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
@@ -35,6 +38,7 @@ interface TextInputBarProps {
   onOpenChange?: (open: boolean) => void;
 }
 
+// Collapsible text input bar, as an alternative to voice recording
 export function TextInputBar({ speaker, onSubmit, isDisabled, onOpenChange }: TextInputBarProps) {
   const [text, setText] = useState("");
   const [open, setOpen] = useState(false);
@@ -47,6 +51,7 @@ export function TextInputBar({ speaker, onSubmit, isDisabled, onOpenChange }: Te
     onOpenChange?.(open);
   }, [open, onOpenChange]);
 
+  // Submit the trimmed text and reset the input
   const handleSubmit = useCallback(async () => {
     const value = text.trim();
     if (!value || isDisabled) return;
@@ -55,6 +60,7 @@ export function TextInputBar({ speaker, onSubmit, isDisabled, onOpenChange }: Te
     await onSubmit(value, speaker);
   }, [text, isDisabled, onSubmit, speaker]);
 
+  // Submit on Enter, allow Shift+Enter for a newline
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (e.key === "Enter" && !e.shiftKey) {
@@ -65,6 +71,7 @@ export function TextInputBar({ speaker, onSubmit, isDisabled, onOpenChange }: Te
     [handleSubmit]
   );
 
+  // Update the text and auto-grow the textarea to fit its content
   const handleChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setText(e.target.value);
     const ta = e.target;

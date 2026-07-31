@@ -6,6 +6,7 @@ interface TranscriptViewerProps {
   onBack: () => void;
 }
 
+// Format a message timestamp as "HH:MM"
 function formatTime(ms: number): string {
   const d = new Date(ms);
   const hh = d.getHours().toString().padStart(2, "0");
@@ -13,6 +14,7 @@ function formatTime(ms: number): string {
   return `${hh}:${mm}`;
 }
 
+// Read-only view of a saved transcript's messages, sorted chronologically
 export default function TranscriptViewer({ transcript, onBack }: TranscriptViewerProps) {
   const sorted = [...transcript.messages].sort((a, b) => a.timestamp - b.timestamp);
 
