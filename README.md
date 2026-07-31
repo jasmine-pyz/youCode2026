@@ -93,7 +93,7 @@ Most translation tools were built for the world's dominant languages. Hearth was
 Hearth is a full-stack mobile communication and translation tool designed for women's shelter residents and staff. It is built as a Progressive Web App (PWA) with Next.js, React, TypeScript, and CSS on the frontend and FastAPI and Python on the backend. When a resident speaks, OpenAI's Whisper, a multilingual speech recognition model that runs locally on-device, first detects the spoken language and then transcribes the speech into text. The transcribed text is then translated using Cohere's Tiny Aya, a family of multilingual translation models that also supports local deployment and is optimized for low-resource languages such as Amharic, Hausa, and Swahili. The translated text can be read aloud through the browser's Web Speech API, which can also support voices built directly into the device. Harmful language detection is run continously in the background, sending an SMS alert to staff through the Twilio API if harmful langauge is detected to support timely follow-up and de-escalation. Conversations can also be saved as transcripts in local storage, letting residents and staff revisit or delete past sessions directly on-device to help protect their privacy. Rather than acting as a one-way translator, Hearth functions as a low-friction communication layer that enables real-time, two-way conversations between shelter residents and staff.
 
 ### Core Features
-- Real-time, two-way communication through a voice-to-text-to-translation-to-speech pipeline
+- Real-time, two-way communication through a speech-to-text, translation, and text-to-speech pipeline
 - Automatic language detection, so conversations can begin even when the spoken language is unknown
 - Broad coverage of 70+ languages, including many underserved, low-resource languages
 - Four selectable translation models, each optimized for a different language group (Auto, Earth, Fire, and Water)
@@ -104,7 +104,7 @@ Hearth is a full-stack mobile communication and translation tool designed for wo
 ### Designed for Privacy and Safety
 - Built for shared-device use in low-resource shelter environments
 - Speech-to-text, translation, and text-to-speech models and services can all support local deployment
-- No account creation is required and transcripts are stored on-device to reduce barriers and protect user privacy
+- No account creation required and transcripts are stored on-device to reduce barriers and protect privacy
 - Harmful language detection that alerts shelter staff by SMS, supporting timely response and de-escalation
 
 Minimizing dependency on external services was a key design principle. OpenAI's Whisper can run locally to handle speech recognition and language detection, keeping audio on the device. Cohere's Tiny Aya can likewise support local deployment for translation, while remaining well suited to underserved and low-resource languages. The browser's Web Speech API can support voices built directly into the device for audio playback. Conversation transcripts can also be kept in local storage rather than on an external server, keeping data on-device.
@@ -138,7 +138,7 @@ Welcomes users with a simple, intuitive landing screen that requires no login or
 <br>
 
 ### Translation Screen
-A voice-to-text-to-translation-to-speech pipeline powers real-time, two-way communication between residents and staff. On either side of the screen, users can press and hold the voice input button to speak in any language, or switch to a keyboard option to type instead. Once a message is spoken or typed, the language is automatically detected and translated without requiring any manual selection, and the translated text appears on screen with an option to play the translated speech aloud. This exchange can continue back and forth in real time, letting the conversation flow naturally on both sides. Users can also select a translation model variant, each optimized to support a different language group, as shown below:
+A speech-to-text, translation, and text-to-speech pipeline powers real-time, two-way communication between residents and staff. On either side of the screen, users can press and hold the voice input button to speak in any language, or switch to a keyboard option to type instead. Once a message is spoken or typed, the language is automatically detected and translated without requiring any manual selection, and the translated text appears on screen with an option to play the translated speech aloud. This exchange can continue back and forth in real time, letting the conversation flow naturally on both sides. Users can also select a translation model variant, each optimized to support a different language group, as shown below:
 - **Auto**: Automatically selects the most appropriate model based on the detected language
 - **Earth**: West Asian and African languages
 - **Fire**: South Asian languages
@@ -202,7 +202,7 @@ Each translation is automatically screened for harmful language before it is del
 |---|---|
 | Frontend | Next.js, React, TypeScript, and CSS, built as a Progressive Web App (PWA) |
 | Backend | FastAPI, Python |
-| Speech-to-Text | Whisper by OpenAI (AI transcription model that detects language and converts speech to text) |
+| Speech-to-Text | Whisper by OpenAI (AI transcription model that converts speech to text) |
 | Translation | Tiny Aya by Cohere (AI multilingual translation model optimized for low-resource languages) |
 | Text-to-Speech | Web Speech API (converts translated text to speech using built-in voices) |
 | SMS Alerts | Twilio API (sends SMS alerts when harmful language is detected) |
@@ -235,7 +235,7 @@ Users can save a completed conversation as a transcript directly in the browser'
 ## Technical Challenges
 
 - Balancing privacy and functionality by selecting models and services that support local deployment wherever possible while maintaining reliable performance
-- Integrating multiple AI models across the voice-to-text-to-translation-to-speech pipeline into a single, cohesive real-time system
+- Integrating multiple AI models across the speech-to-text, translation, and text-to-speech pipeline into a single, cohesive real-time conversational system
 - Ensuring speech-to-text, translation, and text-to-speech systems perform reliably across diverse languages
 - Designing for low digital literacy, ensuring the interface remains intuitive and requires minimal training
 
@@ -244,7 +244,7 @@ Users can save a completed conversation as a transcript directly in the browser'
 ## Achievements
 
 - Built a privacy-first system that uses models and services that support local deployment, avoids account creation, and stores transcripts locally
-- Integrated multiple AI components, for speech-to-text, translation, and text-to-speech, into a unified real-time experience
+- Integrated multiple AI models and services into a unified, real-time user experience
 - Designed for real-world edge cases often overlooked by existing tools, including low digital literacy, limited context, and diverse language needs
 - Made intentional product and technical decisions to ensure the solution is practical, accessible, and deployable in real women's shelter environments
 
@@ -252,7 +252,7 @@ Users can save a completed conversation as a transcript directly in the browser'
 
 ## What We Learned
 
-- Recognized that the challenges faced by women in shelters extend beyond access to information, shaped by communication, trust, and day-to-day constraints that affect how they seek help, access services, and interact with staff
+- Recognized that the challenges faced by women in shelters extend beyond access to information and is shaped by communication, trust, and day-to-day constraints that affect how they seek help and interact with staff
 - Explored new technologies and AI models, including Tiny Aya by Cohere and Whisper by OpenAI, applying them in a real-world system to support multilingual communication
 - Developed the ability to evaluate and combine AI models based on their strengths for translation, speech recognition, and multilingual support, ensuring they work effectively together
 - Strengthened collaboration skills by integrating, debugging, and refining multiple AI components as a team
@@ -264,7 +264,7 @@ Users can save a completed conversation as a transcript directly in the browser'
 Several potential enhancements could extend the functionality of the application:
 - Conducting an ethics-focused study on deploying AI in sensitive, real-world environments
 - Fine-tuning models with trauma-informed language, women's shelter-specific terminology, and improved handling of sensitive topics
-- Expanding safety guardrails with a more context-aware approach to detecting harmful language, beyond keyword matching
+- Expanding safety guardrails with a more context-aware approach to detecting harmful language
 - Supporting code-switching to better reflect real-world multilingual communication
 - Introducing new interaction modes, including one-to-many "townhall" and broadcast-style communication
 - Continuing to test directly with women's shelters like The Bloom Group to gather real user feedback
